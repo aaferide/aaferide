@@ -51,7 +51,7 @@ document.getElementById("f").addEventListener("submit", async function (e) {
 </html>`;
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === "/") {
@@ -74,16 +74,22 @@ export default {
     }
 
     if (url.pathname === "/api/chat") {
-      const message = (url.searchParams.get("message") || "").toLowerCase();
-      let reponse = "Je n'ai pas compris.";
-      if (message.includes("bonjour") || message.includes("salut")) {
-        reponse = "Bonjour ! Je suis Feride AI.";
-      } else if (message.includes("heure")) {
-        reponse = "Il est " + new Date().toISOString() + " (UTC).";
-      } else if (message.includes("nom")) {
-        reponse = "Je m'appelle Feride AI.";
+      const message = url.searchParams.get("message") || "";
+      try {
+        const result = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+          messages: [
+            {
+              role: "system",
+              content:
+                "Tu es Feride AI, un assistant utile. Réponds en français, de façon courte et claire.",
+            },
+            { role: "user", content: message },
+          ],
+        });
+        return Response.json({ reponse: result.response });
+      } catch (err) {
+        return Response.json({ reponse: "Erreur IA : " + err.message });
       }
-      return Response.json({ reponse });
     }
 
     return new Response("Introuvable", { status: 404 });
