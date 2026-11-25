@@ -5,7 +5,7 @@ const PAGE = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feride AI</title>
 <style>
-body{font-family:sans-serif;margin:0;display:flex;flex-direction:column;height:100vh}
+body{font-family:sans-serif;margin:0;display:flex;flex-direction:column;height:100dvh}
 h1{margin:0;padding:12px;background:#4f46e5;color:#fff;font-size:18px}
 #log{flex:1;overflow-y:auto;padding:12px}
 .moi{text-align:right;margin:8px 0}
