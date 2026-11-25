@@ -15,6 +15,19 @@ export default {
       return Response.json({ message: "Salut " + nom });
     }
 
+    if (url.pathname === "/api/chat") {
+      const message = (url.searchParams.get("message") || "").toLowerCase();
+      let reponse = "Je n'ai pas compris.";
+      if (message.includes("bonjour") || message.includes("salut")) {
+        reponse = "Bonjour ! Je suis Feride AI.";
+      } else if (message.includes("heure")) {
+        reponse = "Il est " + new Date().toISOString() + " (UTC).";
+      } else if (message.includes("nom")) {
+        reponse = "Je m'appelle Feride AI.";
+      }
+      return Response.json({ reponse });
+    }
+
     return new Response("Introuvable", { status: 404 });
   },
 };
