@@ -1,71 +1,273 @@
-const SYSTEM = "Tu es Feride AI, un assistant professionnel. Tu réponds en français sauf si l'utilisateur écrit dans une autre langue. Analyse la question étape par étape, sois précis, direct et utile. Pour les tâches techniques, donne des étapes claires.";
-const MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
-const PAGE = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Feride AI</title>
-<style>
-body{font-family:sans-serif;margin:0;display:flex;flex-direction:column;height:100dvh;background:#f4f5f7}
-h1{margin:0;padding:14px;background:#0b5cff;color:#fff;font-size:18px}
-#log{flex:1;overflow-y:auto;padding:12px}
-.moi{text-align:right;margin:10px 0}
-.moi span{display:inline-block;background:#0b5cff;color:#fff;padding:10px 14px;border-radius:16px;max-width:85%;white-space:pre-wrap;text-align:left}
-.ia{text-align:left;margin:10px 0}
-.ia span{display:inline-block;background:#fff;color:#111;padding:10px 14px;border-radius:16px;max-width:85%;white-space:pre-wrap}
-form{display:flex;gap:8px;padding:8px;background:#fff}
-input{flex:1;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:10px}
-button{padding:12px 18px;background:#0b5cff;color:#fff;border:0;border-radius:10px;font-size:16px}
-</style>
-</head>
-<body>
-<h1>Feride AI</h1>
-<div id="log"></div>
-<form id="f"><input id="q" placeholder="Écris ton message..." autocomplete="off"><button>Envoyer</button></form>
-<script>
-var log=document.getElementById('log'),inp=document.getElementById('q'),hist=[];
-var NL=String.fromCharCode(10);
-function add(c,t){var d=document.createElement('div');d.className=c;var s=document.createElement('span');s.textContent=t;d.appendChild(s);log.appendChild(d);log.scrollTop=log.scrollHeight;return s;}
-document.getElementById('f').onsubmit=async function(e){
- e.preventDefault();
- var t=inp.value.trim(); if(!t)return; inp.value='';
- add('moi',t); hist.push({role:'user',content:t});
- var el=add('ia','...'), full='';
- try{
-  var r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:hist})});
-  var rd=r.body.getReader(), dec=new TextDecoder(), buf='';
-  while(true){
-   var x=await rd.read(); if(x.done)break;
-   buf+=dec.decode(x.value,{stream:true});
-   var lines=buf.split(NL); buf=lines.pop();
-   for(var i=0;i<lines.length;i++){
-    var l=lines[i]; if(l.indexOf('data: ')!==0)continue;
-    var d=l.slice(6); if(d==='[DONE]')continue;
-    try{full+=JSON.parse(d).response||'';el.textContent=full;log.scrollTop=log.scrollHeight;}catch(err){}
-   }
+const MODEL_CHAT = "@cf/google/gemma-4-26b-a4b-it";
+const MODEL_IMAGE = "@cf/black-forest-labs/flux-2-klein-4b";
+
+const SYSTEM_PROMPT = `
+Tu es FERIDE AI, un assistant intelligent et polyvalent.
+
+Tes missions :
+- Comprendre les demandes et le contexte des utilisateurs.
+- Répondre en français ou dans la langue utilisée.
+- Donner des explications simples ou détaillées selon la demande.
+- Aider en informatique, programmation, technologie et sciences.
+- Analyser les images envoyées et décrire ce qui est visible.
+- Être honnête lorsque tu ne connais pas une information.
+- Ne jamais prétendre avoir effectué une action qui n'a pas été réalisée.
+
+Tu dois être clair, précis, utile et respectueux.
+`;
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+}
+
+function getImageData(dataUrl) {
+  if (typeof dataUrl !== "string") {
+    throw new Error("Image manquante.");
   }
- }catch(err){el.textContent='Erreur : '+err.message;}
- hist.push({role:'assistant',content:full});
-};
-</script>
-</body>
-</html>`;
+
+  const match = dataUrl.match(
+    /^data:(image\/(?:png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$/
+  );
+
+  if (!match) {
+    throw new Error("Format d'image non accepté.");
+  }
+
+  const mime = match[1] === "image/jpg"
+    ? "image/jpeg"
+    : match[1];
+
+  const binary = atob(match[2]);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return { bytes, mime };
+}
+
+function extractText(result) {
+  if (typeof result === "string") return result;
+
+  return (
+    result?.response ??
+    result?.result?.response ??
+    result?.choices?.[0]?.message?.content ??
+    result?.output_text ??
+    JSON.stringify(result)
+  );
+}
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.pathname === "/api/chat" && request.method === "POST") {
-      const body = await request.json();
-      const history = (body.messages || []).slice(-20);
-      const stream = await env.AI.run(MODEL, {
-        messages: [{ role: "system", content: SYSTEM }, ...history],
-        stream: true,
-        max_tokens: 1024
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
       });
-      return new Response(stream, { headers: { "content-type": "text/event-stream" } });
     }
-    return new Response(PAGE, { headers: { "content-type": "text/html;charset=utf-8" } });
+
+    const url = new URL(request.url);
+
+    if (request.method === "GET" && url.pathname === "/") {
+      return json({
+        name: "FERIDE AI",
+        status: "online",
+        functions: [
+          "conversation",
+          "image-analysis",
+          "image-editing"
+        ]
+      });
+    }
+
+    if (!env.AI) {
+      return json({
+        error: "Le service Workers AI n'est pas configuré."
+      }, 500);
+    }
+
+    if (request.method !== "POST") {
+      return json({ error: "Méthode non autorisée." }, 405);
+    }
+
+    let body;
+
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: "Le contenu JSON est invalide." }, 400);
+    }
+
+    try {
+
+      // 1. CONVERSATION ET ANALYSE DES PHOTOS
+
+      if (url.pathname === "/chat") {
+        const message = body.message;
+        const history = Array.isArray(body.history)
+          ? body.history.slice(-12)
+          : [];
+
+        if (!message && !body.image) {
+          return json({
+            error: "Écris un message ou ajoute une photo."
+          }, 400);
+        }
+
+        const messages = [
+          {
+            role: "system",
+            content: SYSTEM_PROMPT
+          },
+          ...history
+            .filter(item =>
+              ["user", "assistant"].includes(item.role)
+            )
+            .map(item => ({
+              role: item.role,
+              content: String(item.content || "")
+            }))
+        ];
+
+        let content;
+
+        if (body.image) {
+          const image = getImageData(body.image);
+
+          content = [
+            {
+              type: "text",
+              text: message || "Analyse cette image et explique ce que tu observes."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: body.image
+              }
+            }
+          ];
+        } else {
+          content = message;
+        }
+
+        messages.push({
+          role: "user",
+          content
+        });
+
+        const result = await env.AI.run(MODEL_CHAT, {
+          messages,
+          max_tokens: 1500,
+          temperature: 0.6
+        });
+
+        return json({
+          success: true,
+          reply: extractText(result)
+        });
+      }
+
+      // 2. MODIFICATION OU GÉNÉRATION D'IMAGE
+
+      if (url.pathname === "/edit-image") {
+        const prompt = body.prompt;
+
+        if (!prompt || typeof prompt !== "string") {
+          return json({
+            error: "Décris la modification souhaitée."
+          }, 400);
+        }
+
+        const form = new FormData();
+
+        form.set("prompt", prompt);
+
+        if (body.image) {
+          const image = getImageData(body.image);
+
+          form.set(
+            "input_image_0",
+            new Blob([image.bytes], { type: image.mime }),
+            "photo-reference"
+          );
+        }
+
+        form.set("width", "1024");
+        form.set("height", "768");
+
+        const multipartResponse = new Response(form);
+
+        const result = await env.AI.run(MODEL_IMAGE, {
+          multipart: {
+            body: multipartResponse.body,
+            contentType: multipartResponse.headers.get("content-type")
+          }
+        });
+
+        let imageResult =
+          result?.image ??
+          result?.result?.image ??
+          result;
+
+        if (imageResult instanceof Uint8Array) {
+          imageResult = btoa(
+            Array.from(imageResult, byte =>
+              String.fromCharCode(byte)
+            ).join("")
+          );
+        }
+
+        if (imageResult instanceof ArrayBuffer) {
+          const bytes = new Uint8Array(imageResult);
+          imageResult = btoa(
+            Array.from(bytes, byte =>
+              String.fromCharCode(byte)
+            ).join("")
+          );
+        }
+
+        if (typeof imageResult !== "string") {
+          return json({
+            error: "Le modèle n'a pas retourné une image exploitable."
+          }, 502);
+        }
+
+        if (imageResult.startsWith("data:image/")) {
+          return json({
+            success: true,
+            image: imageResult
+          });
+        }
+
+        return json({
+          success: true,
+          image: "data:image/png;base64," + imageResult
+        });
+      }
+
+      return json({
+        error: "Route inconnue."
+      }, 404);
+
+    } catch (error) {
+      return json({
+        success: false,
+        error: error.message || "Une erreur est survenue."
+      }, 500);
+    }
   }
 };
