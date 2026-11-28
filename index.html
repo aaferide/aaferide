@@ -3,384 +3,355 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1424">
 <title>FERIDE AI</title>
 <style>
-:root{
-  --bg:#0f1a2b; --panel:#16243a; --panel2:#1d2e49; --line:#26395a;
-  --text:#e8eefc; --muted:#8fa2c4; --accent:#10a58a;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
-header{display:flex;align-items:center;gap:14px;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;background:linear-gradient(#1a2a45,#16243a);border-bottom:1px solid var(--line)}
-.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#12b886,#0b7fd0);display:grid;place-items:center;font-weight:700;font-size:24px;color:#fff;flex:none}
-header h1{font-size:20px;font-weight:700}
-header p{font-size:14px;color:var(--muted)}
-#chat{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
-.welcome{margin:auto;text-align:center;padding:20px}
-.welcome .bot{font-size:64px;margin-bottom:12px}
-.welcome h2{font-size:26px;line-height:1.25}
-.welcome p{color:var(--muted);margin-top:8px;font-size:15px}
-.msg{max-width:85%;padding:11px 14px;border-radius:16px;line-height:1.5;font-size:15.5px;white-space:pre-wrap;word-wrap:break-word}
-.msg img{display:block;max-width:100%;border-radius:10px;margin:2px 0 6px}
-.msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),#0d8f9e);color:#fff;border-bottom-right-radius:4px}
-.msg.ai{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
-.msg.err{align-self:flex-start;background:#3a1c26;border:1px solid #6b2c3d;color:#ffc9d4}
-.dots span{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
-.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
-@keyframes b{0%,80%,100%{opacity:.3}40%{opacity:1}}
-footer{position:relative;background:var(--panel);border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
-button{border:0;cursor:pointer;font:inherit;color:inherit;background:none}
-button:focus-visible,input:focus-visible{outline:2px solid #5fb3ff;outline-offset:2px}
-.row{display:flex;gap:10px;align-items:center}
-#plus{width:48px;height:48px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;flex:none}
-.field{flex:1;min-width:0;display:flex;align-items:center;height:48px;border-radius:24px;border:1px solid var(--line);background:var(--bg);padding:0 6px 0 16px}
-#input{flex:1;min-width:0;height:100%;border:0;background:transparent;color:var(--text);font-size:16px}
-#input:focus-visible{outline:none}
-.field:focus-within{border-color:#5fb3ff}
-#input::placeholder{color:var(--muted)}
-#dict{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--muted);flex:none}
-#dict.on{color:#fff;background:#c0392b;animation:p 1s infinite}
-#main{width:48px;height:48px;border-radius:50%;background:#fff;color:#0f1a2b;display:grid;place-items:center;flex:none}
-#main svg{grid-area:1/1}
-#main .ic-send{display:none}
-#main[data-mode="send"]{background:var(--accent);color:#fff}
-#main[data-mode="send"] .ic-send{display:block}
-#main[data-mode="send"] .ic-wave{display:none}
-#main[data-mode="live"]{background:#c0392b;color:#fff;animation:p 1.2s infinite}
-#main:disabled{opacity:.5}
-@keyframes p{50%{opacity:.65}}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:14px}
-#new{background:var(--panel2);padding:12px 16px;border-radius:14px;color:var(--text);font-size:15px;flex:none}
-#chip{display:none;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;background:var(--panel2);border-radius:12px;font-size:14px}
-#chip.show{display:flex}
-#chip img{width:44px;height:44px;object-fit:cover;border-radius:8px}
-#chip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#chip button{width:32px;height:32px;border-radius:50%;background:var(--line)}
-#menu{display:none;position:absolute;left:14px;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:6px;min-width:230px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:5}
-#menu.show{display:block}
-#menu button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:10px;font-size:16px}
-#menu button:active{background:var(--line)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+:root{color-scheme:dark;--bg:#091321;--panel:#101f33;--panel2:#172a43;--line:#29415e;--text:#edf5ff;--muted:#9db0c8;--teal:#32d6c4;--blue:#5b9dff;--danger:#ff7777}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b58 0%,var(--bg) 52%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1050px;margin:auto;min-height:100vh;display:flex;flex-direction:column;padding:14px}
+header{display:flex;align-items:center;gap:12px;padding:8px 2px 15px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brain{width:52px;height:52px;display:grid;place-items:center;border:1px solid #3b8c9a;border-radius:17px;background:linear-gradient(145deg,#153e55,#10253d);box-shadow:0 0 24px #20d6c433;font-size:30px;animation:pulse 3s infinite}
+@keyframes pulse{50%{box-shadow:0 0 32px #20d6c477}}
+.brand h1{font-size:20px;letter-spacing:.08em;margin:0}
+.brand p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.status{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:#e5ad47;box-shadow:0 0 10px currentColor}
+.dot.online{background:#35d6a1}.dot.offline{background:var(--danger)}
+.toolbar{display:flex;gap:8px;margin:13px 0;flex-wrap:wrap}
+.smallbtn,.toolbtn{border:1px solid var(--line);background:#12243a;color:var(--text);border-radius:12px;padding:9px 12px;font-size:13px}
+.smallbtn:hover,.toolbtn:hover{border-color:var(--teal);background:#18344a}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
+.chat{flex:1;min-height:320px;max-height:calc(100vh - 290px);overflow:auto;padding:6px 2px 18px;scroll-behavior:smooth}
+.welcome{text-align:center;padding:42px 15px 24px}
+.welcome .bigbrain{font-size:54px;filter:drop-shadow(0 0 18px #25d9d2aa)}
+.welcome h2{font-size:25px;margin:12px 0 7px}
+.welcome p{color:var(--muted);max-width:570px;margin:0 auto;line-height:1.6}
+.suggestions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.suggestions button{background:#10253a;border:1px solid var(--line);color:#cfe8f8;border-radius:20px;padding:9px 13px;font-size:12px}
+.message{display:flex;margin:15px 0;gap:10px;align-items:flex-start}
+.message.user{flex-direction:row-reverse}
+.avatar{flex:0 0 34px;height:34px;border-radius:12px;background:#173d51;display:grid;place-items:center;font-size:18px}
+.user .avatar{background:#263a60}
+.bubble{max-width:min(82%,760px);padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:#112238;line-height:1.58;overflow-wrap:anywhere}
+.user .bubble{background:#183451;border-color:#315c7e}
+.bubble p{margin:0 0 9px}.bubble p:last-child{margin-bottom:0}
+.bubble pre{white-space:pre-wrap;overflow:auto;background:#07111f;border:1px solid #29415e;border-radius:9px;padding:11px;font-size:12px}
+.bubble code{background:#07111f;padding:2px 5px;border-radius:5px}
+.bubble img{max-width:100%;height:auto;border-radius:10px;margin-top:8px}
+.msg-actions{display:flex;gap:8px;margin-top:8px}
+.msg-actions button{font-size:11px;color:var(--muted);background:transparent;border:0;padding:3px}
+.composer-wrap{border:1px solid var(--line);background:#0e1d30;border-radius:18px;padding:10px;box-shadow:0 12px 36px #0004}
+.preview{display:none;align-items:center;gap:10px;padding:5px 7px 10px;color:var(--muted);font-size:12px}
+.preview img{width:48px;height:48px;object-fit:cover;border-radius:9px}
+.preview button{margin-left:auto}
+textarea{display:block;width:100%;resize:vertical;min-height:54px;max-height:170px;border:0;outline:0;background:transparent;color:var(--text);padding:8px;font-size:15px}
+.composer-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.toolbtn{width:42px;height:40px;padding:0;display:grid;place-items:center;font-size:18px}
+.send{margin-left:auto;border:0;background:linear-gradient(110deg,#16bfae,#398ce8);color:#041523;border-radius:12px;padding:10px 18px;font-weight:700}
+.send:disabled{opacity:.5;cursor:wait}
+.hint{font-size:11px;color:var(--muted);padding:8px 4px 0}
+#imagePanel{display:none;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#102238}
+#imagePanel.open{display:block}
+#imagePanel label{font-size:13px;color:#cfe8f8}
+#imagePrompt{width:100%;margin:8px 0;padding:11px;border-radius:10px;border:1px solid var(--line);background:#091827;color:var(--text)}
+#imageResult{display:none;max-width:100%;border-radius:12px;margin-top:12px}
+.typing{color:var(--muted);font-size:13px;padding:10px}
+footer{text-align:center;color:#758ba5;font-size:11px;padding:12px 0 2px}
+.hidden{display:none!important}
+@media(max-width:600px){.app{padding:10px}.chat{max-height:none;min-height:300px}.bubble{max-width:88%}.welcome{padding-top:32px}.brand h1{font-size:18px}.status{font-size:11px}}
 </style>
 </head>
 <body>
-
+<div class="app">
 <header>
-  <div class="logo">F</div>
-  <div>
-    <h1>FERIDE AI</h1>
-    <p>Votre assistant intelligent personnel</p>
+  <div class="brand">
+    <div class="brain" aria-label="Cerveau artificiel">🧠</div>
+    <div><h1>FERIDE AI</h1><p>Assistant intelligent polyvalent</p></div>
   </div>
+  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Connexion...</span></div>
 </header>
 
-<main id="chat" aria-live="polite">
-  <div class="welcome" id="welcome">
-    <div class="bot">🤖</div>
-    <h2>Bonjour ! Je suis FERIDE AI.</h2>
-    <p>Posez-moi une question, je vous réponds.</p>
-  </div>
+<div class="toolbar">
+  <button class="smallbtn" id="newChat">＋ Nouvelle discussion</button>
+  <button class="smallbtn" id="voiceToggle" aria-pressed="false">🔊 Lire les réponses : non</button>
+  <button class="smallbtn" id="imageMode">🎨 Créer / modifier une image</button>
+</div>
+
+<main>
+  <section id="imagePanel">
+    <label for="imagePrompt">Décris l'image à créer ou la modification souhaitée :</label>
+    <input id="imagePrompt" maxlength="1500" placeholder="Ex. Un cerveau numérique lumineux bleu et turquoise...">
+    <div class="composer-bottom">
+      <button class="smallbtn" id="imagePick">📎 Ajouter une image de référence</button>
+      <button class="send" id="generateImage">Générer l'image</button>
+    </div>
+    <img id="imageResult" alt="Image générée par FERIDE AI">
+    <div id="imageMessage" class="hint"></div>
+  </section>
+
+  <section class="chat" id="chat" aria-live="polite">
+    <div class="welcome" id="welcome">
+      <div class="bigbrain">🧠</div>
+      <h2>Bonjour, je suis FERIDE AI.</h2>
+      <p>Pose-moi une question, demande une explication, envoie une photo ou utilise le microphone pour dicter ton message.</p>
+      <div class="suggestions">
+        <button data-prompt="Apprends-moi les bases de Linux étape par étape.">Apprendre Linux</button>
+        <button data-prompt="Explique-moi comment fonctionne un réseau informatique.">Réseaux informatiques</button>
+        <button data-prompt="Aide-moi à comprendre la programmation.">Programmation</button>
+      </div>
+    </div>
+    <div id="messages"></div>
+  </section>
 </main>
 
-<footer>
-  <div id="menu">
-    <button type="button" id="mCam">📷 Prendre une photo</button>
-    <button type="button" id="mImg">🖼️ Choisir une photo</button>
-    <button type="button" id="mEdit">✏️ Modifier une image</button>
-    <button type="button" id="mTxt">📎 Fichier texte</button>
+<div class="composer-wrap">
+  <div class="preview" id="preview">
+    <img id="previewImg" alt="Aperçu de la photo">
+    <span id="previewName">Image jointe</span>
+    <button class="smallbtn" id="removeImage">Retirer</button>
   </div>
-  <div id="chip"><img id="chipImg" alt=""><span id="chipName"></span><button type="button" id="chipX" aria-label="Retirer">✕</button></div>
-
-  <div class="row">
-    <button id="plus" type="button" aria-label="Ajouter">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-    </button>
-    <div class="field">
-      <input id="input" type="text" placeholder="Écrivez votre message..." autocomplete="off" enterkeyhint="send">
-      <button id="dict" type="button" aria-label="Dicter un message">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-      </button>
-    </div>
-    <button id="main" type="button" data-mode="wave" aria-label="Conversation vocale">
-      <svg class="ic-wave" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="9" width="2.6" height="6" rx="1.3"/><rect x="7.4" y="5" width="2.6" height="14" rx="1.3"/><rect x="11.8" y="2" width="2.6" height="20" rx="1.3"/><rect x="16.2" y="7" width="2.6" height="10" rx="1.3"/><rect x="20.6" y="10" width="2" height="4" rx="1"/></svg>
-      <svg class="ic-send" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-    </button>
+  <textarea id="messageInput" rows="2" placeholder="Écris ton message à FERIDE AI..."></textarea>
+  <div class="composer-bottom">
+    <button class="toolbtn" id="attach" title="Joindre une image" aria-label="Joindre une image">＋</button>
+    <button class="toolbtn" id="mic" title="Dicter un message" aria-label="Dicter un message">🎙️</button>
+    <span class="hint" id="micStatus"></span>
+    <button class="send" id="send">Envoyer ➤</button>
   </div>
-  <div class="bar">
-    <span id="status">FERIDE AI · Assistant intelligent</span>
-    <button id="new" type="button">Nouvelle conversation</button>
-  </div>
-</footer>
-
-<input type="file" id="fCam" accept="image/*" capture="environment" hidden>
-<input type="file" id="fImg" accept="image/*" hidden>
-<input type="file" id="fTxt" accept="text/*,.txt,.md,.csv,.json,.js,.html,.css,.py,.log,.xml" hidden>
+  <div class="hint">Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne · Les conversations sont conservées sur cet appareil.</div>
+</div>
+<input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" class="hidden">
+<input type="file" id="referenceInput" accept="image/png,image/jpeg,image/webp" class="hidden">
+<footer>FERIDE AI · Propulsé par Cloudflare Workers AI · Les réponses peuvent nécessiter une vérification.</footer>
+</div>
 
 <script>
-// ====== À MODIFIER : l'adresse de ton Worker (sans "/" à la fin) ======
-const WORKER_URL = "https://REMPLACE-PAR-TON-WORKER.workers.dev";
-// =====================================================================
-
-const $ = id => document.getElementById(id);
-const chat = $("chat"), input = $("input"), mainBtn = $("main"), dictBtn = $("dict");
-const menu = $("menu"), chip = $("chip"), statusEl = $("status");
-const IDLE_TEXT = statusEl.textContent;
-let history = [], busy = false, att = null;
-let liveOn = false, speaking = false, listening = false, wakeLock = null;
-
-/* ---------- Affichage ---------- */
-function add(text, cls, img){
-  const w = $("welcome"); if (w) w.remove();
-  const d = document.createElement("div");
-  d.className = "msg " + cls;
-  if (img){ const i = document.createElement("img"); i.src = img; d.appendChild(i); }
-  if (text) d.appendChild(document.createTextNode(text));
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-  return d;
-}
-function setStatus(t){ statusEl.textContent = t || IDLE_TEXT; }
-function updateMain(){
-  const has = input.value.trim() || att;
-  mainBtn.dataset.mode = liveOn ? "live" : has ? "send" : "wave";
-  mainBtn.setAttribute("aria-label", liveOn ? "Arrêter la conversation vocale" : has ? "Envoyer" : "Conversation vocale");
-}
-input.addEventListener("input", updateMain);
-
-/* ---------- Réponses du Worker ---------- */
-function extractReply(d){
-  if (typeof d === "string") return d;
-  const c = [d.reply, d.response, d.message, d.answer, d.result, d.text];
-  for (const v of c){
-    if (typeof v === "string" && v) return v;
-    if (v && typeof v === "object"){
-      const s = v.response || v.text || v.content;
-      if (typeof s === "string" && s) return s;
-    }
-  }
-  if (d.choices && d.choices[0] && d.choices[0].message) return d.choices[0].message.content;
-  return "";
-}
-function asImageSrc(v){
-  if (typeof v !== "string" || !v) return "";
-  if (v.startsWith("data:image") || v.startsWith("http")) return v;
-  if (v.length > 200 && /^[A-Za-z0-9+/=\s]+$/.test(v)) return "data:image/png;base64," + v.replace(/\s/g, "");
-  return "";
-}
-function extractImage(d){
-  if (!d || typeof d !== "object") return "";
-  const c = [d.image, d.imageUrl, d.image_url, d.url, d.output, d.result && d.result.image, d.result && d.result.url];
-  for (const v of c){ const s = asImageSrc(v); if (s) return s; }
-  return "";
-}
-
-/* ---------- Envoi ---------- */
-async function send(){
-  const text = input.value.trim();
-  if ((!text && !att) || busy) return;
-  busy = true; mainBtn.disabled = true;
-  const a = att;
-  input.value = ""; clearAtt();
-  const shown = text || (a ? (a.kind === "edit" ? "Modifier cette image" : a.kind === "img" ? "Décris cette image." : "") : "");
-  add(a && a.kind === "txt" ? (text || "Voici un fichier.") + "\n📎 " + a.name : shown, "user", a && a.dataUrl);
-  if (liveOn) setStatus("⏳ FERIDE AI réfléchit...");
-
-  const wait = add("", "ai");
-  wait.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
-
-  let path = "/chat", body, msg = text;
-  if (a && a.kind === "txt") msg = (text || "Analyse ce fichier.") + "\n\n[Fichier : " + a.name + "]\n" + a.text;
-  if (a && a.kind === "img" && !msg) msg = "Décris cette image.";
-  history.push({ role: "user", content: msg });
-
-  if (a && a.kind === "edit"){
-    path = "/edit-image";
-    body = { image: a.dataUrl, prompt: text || "Améliore cette image", message: text || "Améliore cette image" };
-  } else {
-    body = { message: msg, messages: history, history: history.slice(0, -1) };
-    if (a && a.kind === "img") body.image = a.dataUrl;
-  }
+(() => {
+  "use strict";
+  const API = "/api";
+  const $ = id => document.getElementById(id);
+  const chat = $("chat"), messagesEl = $("messages"), input = $("messageInput");
+  const sendBtn = $("send"), fileInput = $("fileInput");
+  let history = [];
+  let selectedImage = null;
+  let referenceImage = null;
+  let speakingEnabled = false;
+  let recognition = null;
+  let busy = false;
 
   try {
-    const res = await fetch(WORKER_URL + path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+    const saved = JSON.parse(localStorage.getItem("feride_ai_history") || "[]");
+    if (Array.isArray(saved)) history = saved.slice(-30);
+  } catch (_) { history = []; }
+
+  function setStatus(state, label) {
+    $("statusDot").className = "dot " + state;
+    $("statusText").textContent = label;
+  }
+  function saveHistory() {
+    try { localStorage.setItem("feride_ai_history", JSON.stringify(history.slice(-30))); } catch (_) {}
+  }
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+  }
+  function formatText(text) {
+    let safe = escapeHTML(text || "");
+    safe = safe.replace(/```([\s\S]*?)```/g, (_, code) => "<pre><code>" + code.trim() + "</code></pre>");
+    safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
+    safe = safe.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    safe = safe.split(/\n{2,}/).map(p => p.startsWith("<pre>") ? p : "<p>" + p.replace(/\n/g, "<br>") + "</p>").join("");
+    return safe;
+  }
+  function scrollBottom() { chat.scrollTop = chat.scrollHeight; }
+  function addMessage(role, content, imageData) {
+    $("welcome").classList.add("hidden");
+    const row = document.createElement("div");
+    row.className = "message " + (role === "user" ? "user" : "assistant");
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "👤" : "🧠";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = formatText(content);
+    if (imageData) {
+      const img = document.createElement("img");
+      img.src = imageData; img.alt = "Image envoyée";
+      bubble.appendChild(img);
+    }
+    if (role === "assistant") {
+      const actions = document.createElement("div");
+      actions.className = "msg-actions";
+      const copy = document.createElement("button");
+      copy.textContent = "Copier";
+      copy.onclick = () => navigator.clipboard?.writeText(content).then(() => copy.textContent = "Copié");
+      actions.appendChild(copy);
+      const read = document.createElement("button");
+      read.textContent = "Lire";
+      read.onclick = () => speak(content);
+      actions.appendChild(read);
+      bubble.appendChild(actions);
+    }
+    row.append(avatar, bubble);
+    messagesEl.appendChild(row);
+    scrollBottom();
+    return bubble;
+  }
+  function setBusy(value) {
+    busy = value; sendBtn.disabled = value; $("generateImage").disabled = value;
+    sendBtn.textContent = value ? "Réponse..." : "Envoyer ➤";
+  }
+  function dataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Impossible de lire cette image."));
+      reader.readAsDataURL(file);
     });
-    const ct = res.headers.get("content-type") || "";
-    let reply = "", imgSrc = "";
-    if (ct.includes("image/")){
-      if (!res.ok) throw new Error("Erreur " + res.status);
-      imgSrc = URL.createObjectURL(await res.blob());
-    } else {
-      const raw = await res.text();
-      let data; try { data = JSON.parse(raw); } catch { data = raw; }
-      if (!res.ok) throw new Error((data && data.error) || "Erreur " + res.status);
-      reply = extractReply(data);
-      imgSrc = extractImage(data);
-      if (!reply && !imgSrc) reply = typeof data === "string" ? data : JSON.stringify(data);
-    }
-    wait.innerHTML = "";
-    if (imgSrc){ const i = document.createElement("img"); i.src = imgSrc; wait.appendChild(i); }
-    if (reply) wait.appendChild(document.createTextNode(reply));
-    history.push({ role: "assistant", content: reply || "[image]" });
-    if (liveOn && reply) speak(reply);
-  } catch (e) {
-    wait.className = "msg err";
-    wait.textContent = "Impossible de joindre FERIDE AI. " + e.message;
-    history.pop();
-  } finally {
-    busy = false; mainBtn.disabled = false;
-    chat.scrollTop = chat.scrollHeight;
-    updateMain();
-    if (liveOn){ if (!speaking){ setStatus("🎙️ Je vous écoute..."); setTimeout(listen, 400); } }
-    else input.focus();
   }
-}
-input.addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); send(); } });
-
-$("new").addEventListener("click", () => {
-  history = []; clearAtt();
-  chat.innerHTML = '<div class="welcome" id="welcome"><div class="bot">🤖</div><h2>Bonjour ! Je suis FERIDE AI.</h2><p>Posez-moi une question, je vous réponds.</p></div>';
-});
-
-/* ---------- Bouton + : photos et fichiers ---------- */
-let pickKind = "img";
-$("plus").addEventListener("click", e => { e.stopPropagation(); menu.classList.toggle("show"); });
-document.addEventListener("click", e => { if (!menu.contains(e.target)) menu.classList.remove("show"); });
-function pick(inputEl, kind){ pickKind = kind; menu.classList.remove("show"); inputEl.value = ""; inputEl.click(); }
-$("mCam").addEventListener("click", () => pick($("fCam"), "img"));
-$("mImg").addEventListener("click", () => pick($("fImg"), "img"));
-$("mEdit").addEventListener("click", () => pick($("fImg"), "edit"));
-$("mTxt").addEventListener("click", () => pick($("fTxt"), "txt"));
-
-function loadImage(file){
-  return new Promise((ok, ko) => {
-    const r = new FileReader();
-    r.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        const k = Math.min(1, 1024 / Math.max(im.width, im.height));
-        const c = document.createElement("canvas");
-        c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
-        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-        ok(c.toDataURL("image/jpeg", 0.85));
-      };
-      im.onerror = ko; im.src = r.result;
+  async function chooseFile(file, forReference) {
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { alert("Choisis une image JPG, PNG ou WEBP."); return; }
+    if (file.size > 8 * 1024 * 1024) { alert("Image trop volumineuse. Maximum : 8 Mo."); return; }
+    try {
+      const data = await dataURL(file);
+      if (forReference) {
+        referenceImage = data;
+        $("imageMessage").textContent = "Image de référence ajoutée.";
+      } else {
+        selectedImage = data;
+        $("previewImg").src = data;
+        $("previewName").textContent = file.name;
+        $("preview").style.display = "flex";
+      }
+    } catch (e) { alert(e.message); }
+  }
+  async function checkServer() {
+    try {
+      const response = await fetch(API + "/health", { method: "GET" });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || "Serveur indisponible");
+      setStatus("online", "En ligne");
+    } catch (_) {
+      setStatus("offline", "Serveur inaccessible");
+    }
+  }
+  async function sendMessage() {
+    const message = input.value.trim();
+    if ((!message && !selectedImage) || busy) return;
+    const image = selectedImage;
+    input.value = ""; selectedImage = null; $("preview").style.display = "none";
+    addMessage("user", message || "Analyse cette image.", image);
+    const userContent = message || "Analyse cette image.";
+    history.push({ role: "user", content: userContent });
+    saveHistory();
+    const typing = addMessage("assistant", "FERIDE AI prépare une réponse…");
+    typing.classList.add("typing");
+    setBusy(true);
+    try {
+      const response = await fetch(API + "/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, messages: history.slice(-12), image })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Le serveur n'a pas pu répondre.");
+      const reply = data.reply || data.response || data.assistant;
+      if (!reply) throw new Error("Le serveur a répondu sans texte. Réessaie.");
+      typing.classList.remove("typing");
+      typing.innerHTML = formatText(reply);
+      const actions = document.createElement("div"); actions.className = "msg-actions";
+      const copy = document.createElement("button"); copy.textContent = "Copier";
+      copy.onclick = () => navigator.clipboard?.writeText(reply).then(() => copy.textContent = "Copié");
+      const read = document.createElement("button"); read.textContent = "Lire"; read.onclick = () => speak(reply);
+      actions.append(copy, read); typing.appendChild(actions);
+      history.push({ role: "assistant", content: reply }); saveHistory();
+      if (speakingEnabled) speak(reply);
+    } catch (error) {
+      typing.classList.remove("typing");
+      typing.innerHTML = "<p>Impossible d'obtenir une réponse : " + escapeHTML(error.message) + "</p><p>Vérifie la connexion puis réessaie.</p>";
+    } finally { setBusy(false); scrollBottom(); }
+  }
+  async function generateImage() {
+    const prompt = $("imagePrompt").value.trim();
+    if (!prompt || busy) { $("imageMessage").textContent = "Écris d'abord une description."; return; }
+    setBusy(true); $("imageMessage").textContent = "Génération en cours. Cela peut prendre un moment…";
+    $("imageResult").style.display = "none";
+    try {
+      const response = await fetch(API + "/image", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, image: referenceImage })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "La génération a échoué.");
+      const src = data.image.startsWith("data:") ? data.image : "data:image/png;base64," + data.image;
+      $("imageResult").src = src; $("imageResult").style.display = "block";
+      $("imageMessage").textContent = "Image générée.";
+      addMessage("assistant", "Voici l'image générée pour : " + prompt, src);
+    } catch (e) { $("imageMessage").textContent = "Erreur : " + e.message; }
+    finally { setBusy(false); }
+  }
+  function speak(text) {
+    if (!("speechSynthesis" in window)) { $("micStatus").textContent = "Lecture vocale non prise en charge sur ce navigateur."; return; }
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "fr-FR"; utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+  }
+  function startDictation() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { $("micStatus").textContent = "La dictée vocale n'est pas prise en charge ici. Essaie Chrome."; return; }
+    if (recognition) { recognition.stop(); recognition = null; $("mic").textContent = "🎙️"; $("micStatus").textContent = ""; return; }
+    recognition = new SR();
+    recognition.lang = "fr-FR"; recognition.interimResults = true; recognition.continuous = false;
+    recognition.onstart = () => { $("mic").textContent = "⏹️"; $("micStatus").textContent = "Je t'écoute…"; };
+    recognition.onresult = event => {
+      let finalText = "", interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) finalText += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
+      }
+      if (finalText) input.value = (input.value + " " + finalText).trim();
+      $("micStatus").textContent = interim ? " " + interim : "Paroles transcrites.";
     };
-    r.onerror = ko; r.readAsDataURL(file);
-  });
-}
-function setAtt(a){
-  att = a;
-  $("chipName").textContent = (a.kind === "edit" ? "✏️ À modifier : " : a.kind === "txt" ? "📎 " : "🖼️ ") + a.name;
-  const ci = $("chipImg");
-  if (a.dataUrl){ ci.src = a.dataUrl; ci.style.display = ""; } else ci.style.display = "none";
-  chip.classList.add("show");
-  if (a.kind === "edit") input.placeholder = "Que veux-tu changer ?";
-  updateMain();
-}
-function clearAtt(){
-  att = null; chip.classList.remove("show");
-  input.placeholder = "Écrivez votre message...";
-  updateMain();
-}
-$("chipX").addEventListener("click", clearAtt);
+    recognition.onerror = event => { $("micStatus").textContent = "Dictée : " + event.error; };
+    recognition.onend = () => { $("mic").textContent = "🎙️"; recognition = null; };
+    recognition.start();
+  }
 
-async function onImage(e){
-  const f = e.target.files[0]; if (!f) return;
-  try { setAtt({ kind: pickKind, name: f.name || "photo", dataUrl: await loadImage(f) }); }
-  catch { add("Impossible de lire cette image.", "err"); }
-}
-$("fCam").addEventListener("change", onImage);
-$("fImg").addEventListener("change", onImage);
-$("fTxt").addEventListener("change", e => {
-  const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = () => setAtt({ kind: "txt", name: f.name, text: String(r.result).slice(0, 12000) });
-  r.readAsText(f);
-});
-
-/* ---------- Voix ---------- */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, dict = null;
-
-function listen(){
-  if (!liveOn || busy || speaking || listening || !rec) return;
-  try { rec.start(); } catch (e) {}
-}
-function speak(text){
-  if (!("speechSynthesis" in window)){ setTimeout(listen, 300); return; }
-  const clean = text.replace(/[*_#`>~|]/g, "").replace(/https?:\/\/\S+/g, "lien");
-  const parts = (clean.match(/[^.!?\n]+[.!?]*/g) || []).map(x => x.trim()).filter(Boolean);
-  if (!parts.length){ setTimeout(listen, 300); return; }
-  speechSynthesis.cancel();
-  speaking = true; setStatus("🔊 FERIDE AI parle...");
-  const voice = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("fr"));
-  parts.forEach((p, i) => {
-    const u = new SpeechSynthesisUtterance(p);
-    u.lang = "fr-FR"; if (voice) u.voice = voice;
-    if (i === parts.length - 1){
-      u.onend = u.onerror = () => {
-        speaking = false;
-        if (liveOn){ setStatus("🎙️ Je vous écoute..."); setTimeout(listen, 300); } else setStatus();
-      };
-    }
-    speechSynthesis.speak(u);
-  });
-}
-async function keepAwake(on){
-  try {
-    if (on && "wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen");
-    else if (wakeLock){ await wakeLock.release(); wakeLock = null; }
-  } catch (e) {}
-}
-function stopLive(){
-  liveOn = false; speaking = false;
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-  if (rec){ try { rec.abort(); } catch (e) {} }
-  keepAwake(false); setStatus(); updateMain();
-}
-
-if (SR){
-  rec = new SR();
-  rec.lang = "fr-FR"; rec.continuous = false; rec.interimResults = false;
-  rec.onstart = () => { listening = true; if (liveOn) setStatus("🎙️ Je vous écoute..."); };
-  rec.onresult = e => {
-    const t = e.results[0][0].transcript.trim();
-    if (t && liveOn && !busy){ input.value = t; send(); }
+  $("send").addEventListener("click", sendMessage);
+  input.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+  $("attach").onclick = () => fileInput.click();
+  $("imagePick").onclick = () => $("referenceInput").click();
+  fileInput.onchange = e => chooseFile(e.target.files[0], false);
+  $("referenceInput").onchange = e => chooseFile(e.target.files[0], true);
+  $("removeImage").onclick = () => { selectedImage = null; $("preview").style.display = "none"; fileInput.value = ""; };
+  $("mic").onclick = startDictation;
+  $("generateImage").onclick = generateImage;
+  $("imageMode").onclick = () => $("imagePanel").classList.toggle("open");
+  $("voiceToggle").onclick = () => {
+    speakingEnabled = !speakingEnabled;
+    $("voiceToggle").textContent = "🔊 Lire les réponses : " + (speakingEnabled ? "oui" : "non");
+    $("voiceToggle").setAttribute("aria-pressed", String(speakingEnabled));
+    if (!speakingEnabled && "speechSynthesis" in window) speechSynthesis.cancel();
   };
-  rec.onerror = e => {
-    if (e.error === "not-allowed" || e.error === "service-not-allowed"){
-      stopLive(); add("Autorise le microphone pour le navigateur, puis réessaie.", "err");
-    }
+  $("newChat").onclick = () => {
+    history = []; saveHistory(); messagesEl.innerHTML = ""; $("welcome").classList.remove("hidden");
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
   };
-  rec.onend = () => { listening = false; if (liveOn && !busy && !speaking) setTimeout(listen, 300); };
-
-  dict = new SR();
-  dict.lang = "fr-FR"; dict.interimResults = false;
-  dict.onresult = e => { input.value = (input.value + " " + e.results[0][0].transcript).trim(); updateMain(); };
-  dict.onend = dict.onerror = () => dictBtn.classList.remove("on");
-}
-
-mainBtn.addEventListener("click", () => {
-  if (liveOn){ stopLive(); return; }
-  if (mainBtn.dataset.mode === "send"){ send(); return; }
-  if (!rec){ add("La conversation vocale n'est pas disponible sur ce navigateur. Utilise Chrome.", "err"); return; }
-  if (dict){ try { dict.abort(); } catch (e) {} }
-  liveOn = true; keepAwake(true); updateMain();
-  if ("speechSynthesis" in window){ speechSynthesis.cancel(); speechSynthesis.getVoices(); }
-  listen();
-});
-dictBtn.addEventListener("click", () => {
-  if (!dict){ add("La dictée n'est pas disponible sur ce navigateur. Utilise Chrome.", "err"); return; }
-  if (liveOn) stopLive();
-  if (dictBtn.classList.contains("on")){ dict.stop(); return; }
-  dictBtn.classList.add("on");
-  try { dict.start(); } catch (e) { dictBtn.classList.remove("on"); }
-});
-document.addEventListener("visibilitychange", () => { if (liveOn && !document.hidden) keepAwake(true); });
-updateMain();
+  document.querySelectorAll("[data-prompt]").forEach(btn => btn.onclick = () => { input.value = btn.dataset.prompt; input.focus(); });
+  // Restore the last conversation locally on this device.
+  if (history.length) {
+    $("welcome").classList.add("hidden");
+    history.forEach(m => addMessage(m.role, m.content));
+  }
+  checkServer();
+  setInterval(checkServer, 60000);
+})();
 </script>
 </body>
 </html>
+
