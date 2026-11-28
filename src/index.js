@@ -5,20 +5,27 @@ const MODEL_IMAGE = "@cf/black-forest-labs/flux-2-klein-4b";
 const SYSTEM_PROMPT = `
 Tu es FERIDE AI, un assistant intelligent, professionnel et polyvalent.
 
-Tu réponds en français ou dans la langue utilisée par l'utilisateur.
+Tu réponds dans la langue utilisée par l'utilisateur.
 
-Tes missions :
-- Répondre clairement aux questions.
-- Expliquer simplement ou en détail selon la demande.
-- Aider en informatique, programmation et réseaux.
-- Aider en Linux, Windows, Debian, Ubuntu et cybersécurité éthique.
-- Expliquer les bases de données, le cloud et l'intelligence artificielle.
-- Aider en électronique, télécommunications et maintenance.
+TES MISSIONS :
+- Répondre aux questions de manière claire et précise.
+- Adapter la longueur des réponses à la demande.
+- Aider en informatique et programmation.
+- Enseigner Windows, Linux, Debian et Ubuntu.
+- Expliquer les réseaux et la cybersécurité éthique.
+- Aider en bases de données et cloud.
+- Expliquer l'intelligence artificielle.
+- Aider en électronique et télécommunications.
+- Expliquer la maintenance informatique.
 - Analyser les images envoyées.
 - Aider à apprendre étape par étape.
-- Être honnête sur tes capacités et tes limites.
+- Donner des exemples pratiques.
 
-Ne prétends jamais avoir effectué une action que tu n'as pas réellement effectuée.
+RÈGLES :
+- Être professionnel, rapide et pédagogique.
+- Ne jamais inventer des informations.
+- Ne jamais prétendre avoir effectué une action non réalisée.
+- Expliquer les erreurs et proposer des solutions.
 `;
 
 const corsHeaders = {
@@ -37,9 +44,17 @@ function json(data, status = 200) {
   });
 }
 
+async function readBody(request) {
+  try {
+    return await request.json();
+  } catch {
+    throw new Error("Le contenu envoyé n'est pas un JSON valide.");
+  }
+}
+
 function getImageData(value) {
   if (typeof value !== "string") {
-    throw new Error("Image manquante.");
+    throw new Error("Image manquante ou invalide.");
   }
 
   const match = value.match(
@@ -47,10 +62,15 @@ function getImageData(value) {
   );
 
   if (!match) {
-    throw new Error("Format d'image non valide.");
+    throw new Error("Format accepté : JPG, PNG ou WEBP.");
   }
 
   const binary = atob(match[2].replace(/\s/g, ""));
+
+  if (binary.length > 8 * 1024 * 1024) {
+    throw new Error("Image trop volumineuse. Maximum : 8 Mo.");
+  }
+
   const bytes = new Uint8Array(binary.length);
 
   for (let i = 0; i < binary.length; i++) {
@@ -64,48 +84,75 @@ function getImageData(value) {
 }
 
 async function handleChat(request, env) {
-  const body = await request.json();
-
-  const messages = Array.isArray(body.messages)
-    ? body.messages
-    : Array.isArray(body.history)
-      ? body.history
-      : [];
-
-  const conversation = messages
-    .filter(m =>
-      m &&
-      ["user", "assistant"].includes(m.role) &&
-      typeof m.content === "string"
-    )
-    .slice(-12)
-    .map(m => ({
-      role: m.role,
-      content: m.content.slice(0, 12000),
-    }));
+  const body = await readBody(request);
 
   const message = typeof body.message === "string"
     ? body.message.trim()
     : "";
 
   if (!message && !body.image) {
-    return json({ success: false, error: "Écris un message." }, 400);
+    return json({
+      success: false,
+      error: "Écris un message ou envoie une image.",
+    }, 400);
   }
 
-  const lastMessage = conversation[conversation.length - 1];
-
-  if (message && (!lastMessage || lastMessage.role !== "user" ||
-      lastMessage.content !== message)) {
-    conversation.push({ role: "user", content: message });
+  if (message.length > 12000) {
+    return json({
+      success: false,
+      error: "Le message est trop long.",
+    }, 400);
   }
 
-  const userMessage = conversation[conversation.length - 1];
+  const source = Array.isArray(body.messages)
+    ? body.messages
+    : Array.isArray(body.history)
+      ? body.history
+      : [];
+
+  const conversation = source
+    .filter(m =>
+      m &&
+      ["user", "assistant"].includes(m.role) &&
+      typeof m.content === "string"
+    )
+    .slice(-10)
+    .map(m => ({
+      role: m.role,
+      content: m.content.slice(0, 12000),
+    }));
+
+  const last = conversation[conversation.length - 1];
+
+  if (
+    message &&
+    (!last || last.role !== "user" || last.content !== message)
+  ) {
+    conversation.push({
+      role: "user",
+      content: message,
+    });
+  }
 
   if (body.image) {
     const image = getImageData(body.image);
 
+    const lastMessage = conversation[conversation.length - 1];
+
+    if (!lastMessage || lastMessage.role !== "user") {
+      conversation.push({
+        role: "user",
+        content: message || "Décris cette image.",
+      });
+    }
+
+    const userMessage = conversation[conversation.length - 1];
+
     userMessage.content = [
-      { type: "text", text: message || "Décris cette image." },
+      {
+        type: "text",
+        text: message || "Analyse et décris cette image.",
+      },
       {
         type: "image",
         image: Array.from(image.bytes),
@@ -115,7 +162,10 @@ async function handleChat(request, env) {
 
   const result = await env.AI.run(MODEL_CHAT, {
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      {
+        role: "system",
+        content: SYSTEM_PROMPT,
+      },
       ...conversation,
     ],
     chat_template_kwargs: {
@@ -129,29 +179,29 @@ async function handleChat(request, env) {
     result?.choices?.[0]?.message?.content ||
     "";
 
-  if (!reply) {
+  if (typeof reply !== "string" || !reply.trim()) {
     return json({
       success: false,
       error: "Le modèle n'a pas renvoyé de réponse.",
-      details: result,
     }, 502);
   }
 
   return json({
     success: true,
-    reply,
+    assistant: "FERIDE AI",
+    reply: reply.trim(),
   });
 }
 
 async function handleImage(request, env) {
-  const body = await request.json();
+  const body = await readBody(request);
 
   const prompt = String(body.prompt || body.message || "").trim();
 
   if (!prompt) {
     return json({
       success: false,
-      error: "Décris l'image que tu souhaites créer ou modifier.",
+      error: "Décris l'image que tu souhaites créer.",
     }, 400);
   }
 
@@ -197,7 +247,17 @@ async function handleImage(request, env) {
     base64 = data.image;
   }
 
-  if (!base64) {
+  if (base64 instanceof Uint8Array) {
+    let binary = "";
+
+    for (let i = 0; i < base64.length; i++) {
+      binary += String.fromCharCode(base64[i]);
+    }
+
+    base64 = btoa(binary);
+  }
+
+  if (typeof base64 !== "string" || !base64) {
     return json({
       success: false,
       error: "Le modèle n'a pas généré d'image.",
@@ -206,6 +266,7 @@ async function handleImage(request, env) {
 
   return json({
     success: true,
+    assistant: "FERIDE AI",
     image: "data:image/png;base64," + base64,
   });
 }
@@ -228,6 +289,16 @@ export default {
         assistant: "FERIDE AI",
         status: "online",
         message: "Le serveur FERIDE AI fonctionne.",
+      });
+    }
+
+    if (request.method === "GET" && path === "/health") {
+      return json({
+        success: true,
+        assistant: "FERIDE AI",
+        status: "online",
+        chat: "ready",
+        image: "ready",
       });
     }
 
@@ -267,4 +338,3 @@ export default {
     }, 404);
   },
 };
-
