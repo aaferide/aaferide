@@ -3,355 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b1424">
-<title>FERIDE AI</title>
+<title>Feride AI</title>
 <style>
-:root{color-scheme:dark;--bg:#091321;--panel:#101f33;--panel2:#172a43;--line:#29415e;--text:#edf5ff;--muted:#9db0c8;--teal:#32d6c4;--blue:#5b9dff;--danger:#ff7777}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b58 0%,var(--bg) 52%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.app{max-width:1050px;margin:auto;min-height:100vh;display:flex;flex-direction:column;padding:14px}
-header{display:flex;align-items:center;gap:12px;padding:8px 2px 15px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.brain{width:52px;height:52px;display:grid;place-items:center;border:1px solid #3b8c9a;border-radius:17px;background:linear-gradient(145deg,#153e55,#10253d);box-shadow:0 0 24px #20d6c433;font-size:30px;animation:pulse 3s infinite}
-@keyframes pulse{50%{box-shadow:0 0 32px #20d6c477}}
-.brand h1{font-size:20px;letter-spacing:.08em;margin:0}
-.brand p{font-size:12px;color:var(--muted);margin:3px 0 0}
-.status{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;white-space:nowrap}
-.dot{width:8px;height:8px;border-radius:50%;background:#e5ad47;box-shadow:0 0 10px currentColor}
-.dot.online{background:#35d6a1}.dot.offline{background:var(--danger)}
-.toolbar{display:flex;gap:8px;margin:13px 0;flex-wrap:wrap}
-.smallbtn,.toolbtn{border:1px solid var(--line);background:#12243a;color:var(--text);border-radius:12px;padding:9px 12px;font-size:13px}
-.smallbtn:hover,.toolbtn:hover{border-color:var(--teal);background:#18344a}
-main{flex:1;display:flex;flex-direction:column;min-height:0}
-.chat{flex:1;min-height:320px;max-height:calc(100vh - 290px);overflow:auto;padding:6px 2px 18px;scroll-behavior:smooth}
-.welcome{text-align:center;padding:42px 15px 24px}
-.welcome .bigbrain{font-size:54px;filter:drop-shadow(0 0 18px #25d9d2aa)}
-.welcome h2{font-size:25px;margin:12px 0 7px}
-.welcome p{color:var(--muted);max-width:570px;margin:0 auto;line-height:1.6}
-.suggestions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
-.suggestions button{background:#10253a;border:1px solid var(--line);color:#cfe8f8;border-radius:20px;padding:9px 13px;font-size:12px}
-.message{display:flex;margin:15px 0;gap:10px;align-items:flex-start}
-.message.user{flex-direction:row-reverse}
-.avatar{flex:0 0 34px;height:34px;border-radius:12px;background:#173d51;display:grid;place-items:center;font-size:18px}
-.user .avatar{background:#263a60}
-.bubble{max-width:min(82%,760px);padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:#112238;line-height:1.58;overflow-wrap:anywhere}
-.user .bubble{background:#183451;border-color:#315c7e}
-.bubble p{margin:0 0 9px}.bubble p:last-child{margin-bottom:0}
-.bubble pre{white-space:pre-wrap;overflow:auto;background:#07111f;border:1px solid #29415e;border-radius:9px;padding:11px;font-size:12px}
-.bubble code{background:#07111f;padding:2px 5px;border-radius:5px}
-.bubble img{max-width:100%;height:auto;border-radius:10px;margin-top:8px}
-.msg-actions{display:flex;gap:8px;margin-top:8px}
-.msg-actions button{font-size:11px;color:var(--muted);background:transparent;border:0;padding:3px}
-.composer-wrap{border:1px solid var(--line);background:#0e1d30;border-radius:18px;padding:10px;box-shadow:0 12px 36px #0004}
-.preview{display:none;align-items:center;gap:10px;padding:5px 7px 10px;color:var(--muted);font-size:12px}
-.preview img{width:48px;height:48px;object-fit:cover;border-radius:9px}
-.preview button{margin-left:auto}
-textarea{display:block;width:100%;resize:vertical;min-height:54px;max-height:170px;border:0;outline:0;background:transparent;color:var(--text);padding:8px;font-size:15px}
-.composer-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.toolbtn{width:42px;height:40px;padding:0;display:grid;place-items:center;font-size:18px}
-.send{margin-left:auto;border:0;background:linear-gradient(110deg,#16bfae,#398ce8);color:#041523;border-radius:12px;padding:10px 18px;font-weight:700}
-.send:disabled{opacity:.5;cursor:wait}
-.hint{font-size:11px;color:var(--muted);padding:8px 4px 0}
-#imagePanel{display:none;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#102238}
-#imagePanel.open{display:block}
-#imagePanel label{font-size:13px;color:#cfe8f8}
-#imagePrompt{width:100%;margin:8px 0;padding:11px;border-radius:10px;border:1px solid var(--line);background:#091827;color:var(--text)}
-#imageResult{display:none;max-width:100%;border-radius:12px;margin-top:12px}
-.typing{color:var(--muted);font-size:13px;padding:10px}
-footer{text-align:center;color:#758ba5;font-size:11px;padding:12px 0 2px}
-.hidden{display:none!important}
-@media(max-width:600px){.app{padding:10px}.chat{max-height:none;min-height:300px}.bubble{max-width:88%}.welcome{padding-top:32px}.brand h1{font-size:18px}.status{font-size:11px}}
+:root{
+  --bg:#0f0f10; --panel:#1a1a1c; --panel2:#242427; --line:#2e2e32;
+  --text:#ececec; --muted:#9a9aa2; --accent:#7c5cff; --accent2:#5b8cff; --danger:#ff5c6c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:var(--bg)}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#fff}
+header h1{font-size:17px;margin:0;flex:1}
+header small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#777;margin-right:5px}
+.dot.ok{background:#3ddc84}.dot.ko{background:var(--danger)}
+.hbtn{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer}
+#chat{flex:1;overflow-y:auto;padding:16px 14px;scroll-behavior:smooth}
+#welcome{text-align:center;margin-top:12vh}
+#welcome .bot{font-size:64px}
+#welcome h2{margin:10px 0 4px;font-size:22px}
+#welcome p{color:var(--muted);margin:0}
+.msg{display:flex;margin:10px 0}
+.msg.user{justify-content:flex-end}
+.bubble{max-width:86%;padding:10px 13px;border-radius:16px;line-height:1.45;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+.user .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.ai .bubble{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bubble img{max-width:100%;border-radius:10px;display:block;margin-top:6px}
+.bubble pre{background:#0a0a0b;border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;margin:8px 0;white-space:pre}
+.bubble code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.tools{display:flex;gap:6px;margin-top:6px}
+.tools button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;font-size:12px;padding:3px 8px;cursor:pointer}
+.typing span{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+#bar{padding:8px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);position:relative}
+#previews{display:flex;gap:8px;flex-wrap:wrap;padding:0 2px 8px}
+.pv{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;font-size:12px;color:var(--muted)}
+.pv img{width:56px;height:56px;object-fit:cover;border-radius:8px;display:block}
+.pv b{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:12px;cursor:pointer}
+.row{display:flex;align-items:flex-end;gap:8px}
+.round{width:42px;height:42px;flex:none;border-radius:50%;border:none;background:var(--panel2);color:var(--text);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.field{flex:1;display:flex;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:4px 6px 4px 14px}
+.field textarea{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:16px;resize:none;max-height:140px;padding:9px 0;font-family:inherit}
+.field button{background:none;border:none;color:var(--muted);font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer}
+.field button.on{color:var(--danger);animation:pulse 1s infinite}
+#send{background:var(--accent);color:#fff}
+#voice{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+#voice.on{background:var(--danger);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#menu{display:none;position:absolute;left:12px;bottom:calc(66px + env(safe-area-inset-bottom,0px));background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:210px;z-index:5;box-shadow:0 8px 30px #0008}
+#menu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text);padding:13px 16px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--line)}
+#menu button:last-child{border:none}
+#status{font-size:12px;color:var(--muted);text-align:center;padding-bottom:4px;min-height:16px}
 </style>
 </head>
 <body>
-<div class="app">
+
 <header>
-  <div class="brand">
-    <div class="brain" aria-label="Cerveau artificiel">🧠</div>
-    <div><h1>FERIDE AI</h1><p>Assistant intelligent polyvalent</p></div>
-  </div>
-  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Connexion...</span></div>
+  <div class="logo">F</div>
+  <h1>FERIDE AI<small><span id="dot" class="dot"></span><span id="state">Connexion…</span></small></h1>
+  <button class="hbtn" id="newChat">+ Nouvelle conversation</button>
 </header>
 
-<div class="toolbar">
-  <button class="smallbtn" id="newChat">＋ Nouvelle discussion</button>
-  <button class="smallbtn" id="voiceToggle" aria-pressed="false">🔊 Lire les réponses : non</button>
-  <button class="smallbtn" id="imageMode">🎨 Créer / modifier une image</button>
-</div>
-
-<main>
-  <section id="imagePanel">
-    <label for="imagePrompt">Décris l'image à créer ou la modification souhaitée :</label>
-    <input id="imagePrompt" maxlength="1500" placeholder="Ex. Un cerveau numérique lumineux bleu et turquoise...">
-    <div class="composer-bottom">
-      <button class="smallbtn" id="imagePick">📎 Ajouter une image de référence</button>
-      <button class="send" id="generateImage">Générer l'image</button>
-    </div>
-    <img id="imageResult" alt="Image générée par FERIDE AI">
-    <div id="imageMessage" class="hint"></div>
-  </section>
-
-  <section class="chat" id="chat" aria-live="polite">
-    <div class="welcome" id="welcome">
-      <div class="bigbrain">🧠</div>
-      <h2>Bonjour, je suis FERIDE AI.</h2>
-      <p>Pose-moi une question, demande une explication, envoie une photo ou utilise le microphone pour dicter ton message.</p>
-      <div class="suggestions">
-        <button data-prompt="Apprends-moi les bases de Linux étape par étape.">Apprendre Linux</button>
-        <button data-prompt="Explique-moi comment fonctionne un réseau informatique.">Réseaux informatiques</button>
-        <button data-prompt="Aide-moi à comprendre la programmation.">Programmation</button>
-      </div>
-    </div>
-    <div id="messages"></div>
-  </section>
-</main>
-
-<div class="composer-wrap">
-  <div class="preview" id="preview">
-    <img id="previewImg" alt="Aperçu de la photo">
-    <span id="previewName">Image jointe</span>
-    <button class="smallbtn" id="removeImage">Retirer</button>
+<div id="chat">
+  <div id="welcome">
+    <div class="bot">🧠</div>
+    <h2>Bonjour ! Je suis FERIDE AI.</h2>
+    <p>Comment puis-je vous aider aujourd'hui ?</p>
   </div>
-  <textarea id="messageInput" rows="2" placeholder="Écris ton message à FERIDE AI..."></textarea>
-  <div class="composer-bottom">
-    <button class="toolbtn" id="attach" title="Joindre une image" aria-label="Joindre une image">＋</button>
-    <button class="toolbtn" id="mic" title="Dicter un message" aria-label="Dicter un message">🎙️</button>
-    <span class="hint" id="micStatus"></span>
-    <button class="send" id="send">Envoyer ➤</button>
+</div>
+
+<div id="bar">
+  <div id="menu">
+    <button id="mPhoto">🖼️ Photo (galerie)</button>
+    <button id="mCam">📷 Prendre une photo</button>
+    <button id="mFile">📎 Fichier</button>
+    <button id="mImg">🎨 Créer une image</button>
   </div>
-  <div class="hint">Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne · Les conversations sont conservées sur cet appareil.</div>
+  <div id="status"></div>
+  <div id="previews"></div>
+  <div class="row">
+    <button class="round" id="plus" title="Ajouter">＋</button>
+    <div class="field">
+      <textarea id="input" rows="1" placeholder="Écrire à Feride AI…"></textarea>
+      <button id="mic" title="Dictée">🎤</button>
+      <button id="send" title="Envoyer">➤</button>
+    </div>
+    <button class="round" id="voice" title="Conversation vocale">🎧</button>
+  </div>
 </div>
-<input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" class="hidden">
-<input type="file" id="referenceInput" accept="image/png,image/jpeg,image/webp" class="hidden">
-<footer>FERIDE AI · Propulsé par Cloudflare Workers AI · Les réponses peuvent nécessiter une vérification.</footer>
-</div>
+
+<input type="file" id="fPhoto" accept="image/*" multiple hidden>
+<input type="file" id="fCam" accept="image/*" capture="environment" hidden>
+<input type="file" id="fFile" hidden multiple>
 
 <script>
-(() => {
+(function(){
   "use strict";
-  const API = "/api";
-  const $ = id => document.getElementById(id);
-  const chat = $("chat"), messagesEl = $("messages"), input = $("messageInput");
-  const sendBtn = $("send"), fileInput = $("fileInput");
-  let history = [];
-  let selectedImage = null;
-  let referenceImage = null;
-  let speakingEnabled = false;
-  let recognition = null;
-  let busy = false;
+  var WORKER = "https://aaferide.aaferide-abdou-bb.workers.dev";
+  var API = location.hostname.indexOf("workers.dev")>-1 ? "" : WORKER; // GitHub Pages ou fichier local -> on appelle le Worker
+  var $ = function(id){return document.getElementById(id);};
+  var chat=$("chat"), input=$("input"), welcome=$("welcome");
+  var history=[], attachments=[], imageMode=false, busy=false;
 
-  try {
-    const saved = JSON.parse(localStorage.getItem("feride_ai_history") || "[]");
-    if (Array.isArray(saved)) history = saved.slice(-30);
-  } catch (_) { history = []; }
+  /* ---------- Santé du serveur ---------- */
+  fetch(API+"/api/health").then(function(r){return r.json();}).then(function(){
+    $("dot").className="dot ok"; $("state").textContent="En ligne";
+  }).catch(function(){
+    $("dot").className="dot ko"; $("state").textContent="Serveur injoignable";
+  });
 
-  function setStatus(state, label) {
-    $("statusDot").className = "dot " + state;
-    $("statusText").textContent = label;
-  }
-  function saveHistory() {
-    try { localStorage.setItem("feride_ai_history", JSON.stringify(history.slice(-30))); } catch (_) {}
-  }
-  function escapeHTML(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-  }
-  function formatText(text) {
-    let safe = escapeHTML(text || "");
-    safe = safe.replace(/```([\s\S]*?)```/g, (_, code) => "<pre><code>" + code.trim() + "</code></pre>");
-    safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
-    safe = safe.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    safe = safe.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-    safe = safe.split(/\n{2,}/).map(p => p.startsWith("<pre>") ? p : "<p>" + p.replace(/\n/g, "<br>") + "</p>").join("");
-    return safe;
-  }
-  function scrollBottom() { chat.scrollTop = chat.scrollHeight; }
-  function addMessage(role, content, imageData) {
-    $("welcome").classList.add("hidden");
-    const row = document.createElement("div");
-    row.className = "message " + (role === "user" ? "user" : "assistant");
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = role === "user" ? "👤" : "🧠";
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.innerHTML = formatText(content);
-    if (imageData) {
-      const img = document.createElement("img");
-      img.src = imageData; img.alt = "Image envoyée";
-      bubble.appendChild(img);
+  /* ---------- Utilitaires ---------- */
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function fmt(t){
+    var parts=t.split("```"), out="";
+    for(var i=0;i<parts.length;i++){
+      if(i%2){ out+="<pre><code>"+esc(parts[i].replace(/^[a-zA-Z0-9]*\n/,""))+"</code></pre>"; }
+      else{ out+=esc(parts[i]).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>"); }
     }
-    if (role === "assistant") {
-      const actions = document.createElement("div");
-      actions.className = "msg-actions";
-      const copy = document.createElement("button");
-      copy.textContent = "Copier";
-      copy.onclick = () => navigator.clipboard?.writeText(content).then(() => copy.textContent = "Copié");
-      actions.appendChild(copy);
-      const read = document.createElement("button");
-      read.textContent = "Lire";
-      read.onclick = () => speak(content);
-      actions.appendChild(read);
-      bubble.appendChild(actions);
+    return out;
+  }
+  function scrollDown(){chat.scrollTop=chat.scrollHeight;}
+  function setStatus(t){$("status").textContent=t||"";}
+  function autosize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,140)+"px";}
+  input.addEventListener("input",autosize);
+
+  function addMsg(role,html,rawText,imgs){
+    if(welcome){welcome.remove();welcome=null;}
+    var wrap=document.createElement("div"); wrap.className="msg "+role;
+    var b=document.createElement("div"); b.className="bubble"; b.innerHTML=html;
+    if(imgs){imgs.forEach(function(src){var im=document.createElement("img");im.src=src;b.appendChild(im);});}
+    if(role==="ai" && rawText){
+      var tools=document.createElement("div"); tools.className="tools";
+      var sp=document.createElement("button"); sp.textContent="🔊 Écouter";
+      sp.onclick=function(){speak(rawText);};
+      var cp=document.createElement("button"); cp.textContent="📋 Copier";
+      cp.onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(rawText);cp.textContent="✔ Copié";};
+      tools.appendChild(sp);tools.appendChild(cp);b.appendChild(tools);
     }
-    row.append(avatar, bubble);
-    messagesEl.appendChild(row);
-    scrollBottom();
-    return bubble;
+    wrap.appendChild(b); chat.appendChild(wrap); scrollDown(); return b;
   }
-  function setBusy(value) {
-    busy = value; sendBtn.disabled = value; $("generateImage").disabled = value;
-    sendBtn.textContent = value ? "Réponse..." : "Envoyer ➤";
+  function typing(){
+    return addMsg("ai",'<span class="typing"><span></span><span></span><span></span></span>');
   }
-  function dataURL(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error("Impossible de lire cette image."));
-      reader.readAsDataURL(file);
+
+  /* ---------- Pièces jointes ---------- */
+  function renderPreviews(){
+    var box=$("previews"); box.innerHTML="";
+    attachments.forEach(function(a,i){
+      var d=document.createElement("div"); d.className="pv";
+      if(a.type.indexOf("image/")===0){var im=document.createElement("img");im.src=a.data;d.appendChild(im);}
+      else{d.textContent="📄 "+a.name;}
+      var x=document.createElement("b"); x.textContent="×";
+      x.onclick=function(){attachments.splice(i,1);renderPreviews();};
+      d.appendChild(x); box.appendChild(d);
     });
   }
-  async function chooseFile(file, forReference) {
-    if (!file) return;
-    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { alert("Choisis une image JPG, PNG ou WEBP."); return; }
-    if (file.size > 8 * 1024 * 1024) { alert("Image trop volumineuse. Maximum : 8 Mo."); return; }
-    try {
-      const data = await dataURL(file);
-      if (forReference) {
-        referenceImage = data;
-        $("imageMessage").textContent = "Image de référence ajoutée.";
-      } else {
-        selectedImage = data;
-        $("previewImg").src = data;
-        $("previewName").textContent = file.name;
-        $("preview").style.display = "flex";
+  function readFiles(files){
+    Array.prototype.forEach.call(files,function(f){
+      var r=new FileReader();
+      if(f.type.indexOf("image/")===0 || f.type==="application/pdf"){
+        r.onload=function(){attachments.push({name:f.name,type:f.type,data:r.result});renderPreviews();};
+        r.readAsDataURL(f);
+      }else{
+        r.onload=function(){attachments.push({name:f.name,type:"text/plain",text:String(r.result).slice(0,60000)});renderPreviews();};
+        r.readAsText(f);
       }
-    } catch (e) { alert(e.message); }
+    });
   }
-  async function checkServer() {
-    try {
-      const response = await fetch(API + "/health", { method: "GET" });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.error || "Serveur indisponible");
-      setStatus("online", "En ligne");
-    } catch (_) {
-      setStatus("offline", "Serveur inaccessible");
-    }
-  }
-  async function sendMessage() {
-    const message = input.value.trim();
-    if ((!message && !selectedImage) || busy) return;
-    const image = selectedImage;
-    input.value = ""; selectedImage = null; $("preview").style.display = "none";
-    addMessage("user", message || "Analyse cette image.", image);
-    const userContent = message || "Analyse cette image.";
-    history.push({ role: "user", content: userContent });
-    saveHistory();
-    const typing = addMessage("assistant", "FERIDE AI prépare une réponse…");
-    typing.classList.add("typing");
-    setBusy(true);
-    try {
-      const response = await fetch(API + "/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, messages: history.slice(-12), image })
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.error || "Le serveur n'a pas pu répondre.");
-      const reply = data.reply || data.response || data.assistant;
-      if (!reply) throw new Error("Le serveur a répondu sans texte. Réessaie.");
-      typing.classList.remove("typing");
-      typing.innerHTML = formatText(reply);
-      const actions = document.createElement("div"); actions.className = "msg-actions";
-      const copy = document.createElement("button"); copy.textContent = "Copier";
-      copy.onclick = () => navigator.clipboard?.writeText(reply).then(() => copy.textContent = "Copié");
-      const read = document.createElement("button"); read.textContent = "Lire"; read.onclick = () => speak(reply);
-      actions.append(copy, read); typing.appendChild(actions);
-      history.push({ role: "assistant", content: reply }); saveHistory();
-      if (speakingEnabled) speak(reply);
-    } catch (error) {
-      typing.classList.remove("typing");
-      typing.innerHTML = "<p>Impossible d'obtenir une réponse : " + escapeHTML(error.message) + "</p><p>Vérifie la connexion puis réessaie.</p>";
-    } finally { setBusy(false); scrollBottom(); }
-  }
-  async function generateImage() {
-    const prompt = $("imagePrompt").value.trim();
-    if (!prompt || busy) { $("imageMessage").textContent = "Écris d'abord une description."; return; }
-    setBusy(true); $("imageMessage").textContent = "Génération en cours. Cela peut prendre un moment…";
-    $("imageResult").style.display = "none";
-    try {
-      const response = await fetch(API + "/image", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, image: referenceImage })
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.error || "La génération a échoué.");
-      const src = data.image.startsWith("data:") ? data.image : "data:image/png;base64," + data.image;
-      $("imageResult").src = src; $("imageResult").style.display = "block";
-      $("imageMessage").textContent = "Image générée.";
-      addMessage("assistant", "Voici l'image générée pour : " + prompt, src);
-    } catch (e) { $("imageMessage").textContent = "Erreur : " + e.message; }
-    finally { setBusy(false); }
-  }
-  function speak(text) {
-    if (!("speechSynthesis" in window)) { $("micStatus").textContent = "Lecture vocale non prise en charge sur ce navigateur."; return; }
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "fr-FR"; utterance.rate = 1;
-    speechSynthesis.speak(utterance);
-  }
-  function startDictation() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { $("micStatus").textContent = "La dictée vocale n'est pas prise en charge ici. Essaie Chrome."; return; }
-    if (recognition) { recognition.stop(); recognition = null; $("mic").textContent = "🎙️"; $("micStatus").textContent = ""; return; }
-    recognition = new SR();
-    recognition.lang = "fr-FR"; recognition.interimResults = true; recognition.continuous = false;
-    recognition.onstart = () => { $("mic").textContent = "⏹️"; $("micStatus").textContent = "Je t'écoute…"; };
-    recognition.onresult = event => {
-      let finalText = "", interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) finalText += event.results[i][0].transcript;
-        else interim += event.results[i][0].transcript;
-      }
-      if (finalText) input.value = (input.value + " " + finalText).trim();
-      $("micStatus").textContent = interim ? " " + interim : "Paroles transcrites.";
-    };
-    recognition.onerror = event => { $("micStatus").textContent = "Dictée : " + event.error; };
-    recognition.onend = () => { $("mic").textContent = "🎙️"; recognition = null; };
-    recognition.start();
+  $("fPhoto").onchange=function(e){readFiles(e.target.files);e.target.value="";};
+  $("fCam").onchange=function(e){readFiles(e.target.files);e.target.value="";};
+  $("fFile").onchange=function(e){readFiles(e.target.files);e.target.value="";};
+
+  /* ---------- Menu + ---------- */
+  var menu=$("menu");
+  $("plus").onclick=function(e){e.stopPropagation();menu.style.display=menu.style.display==="block"?"none":"block";};
+  document.addEventListener("click",function(){menu.style.display="none";});
+  $("mPhoto").onclick=function(){$("fPhoto").click();};
+  $("mCam").onclick=function(){$("fCam").click();};
+  $("mFile").onclick=function(){$("fFile").click();};
+  $("mImg").onclick=function(){
+    imageMode=!imageMode;
+    input.placeholder=imageMode?"Décrivez l'image à créer…":"Écrire à Feride AI…";
+    setStatus(imageMode?"🎨 Mode création d'image activé":"");
+    input.focus();
+  };
+
+  /* ---------- Envoi ---------- */
+  function extract(d){
+    if(!d) return "";
+    if(typeof d==="string") return d;
+    return d.reply||d.response||d.text||d.message||d.answer||d.output||
+      (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||"";
   }
 
-  $("send").addEventListener("click", sendMessage);
-  input.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-  $("attach").onclick = () => fileInput.click();
-  $("imagePick").onclick = () => $("referenceInput").click();
-  fileInput.onchange = e => chooseFile(e.target.files[0], false);
-  $("referenceInput").onchange = e => chooseFile(e.target.files[0], true);
-  $("removeImage").onclick = () => { selectedImage = null; $("preview").style.display = "none"; fileInput.value = ""; };
-  $("mic").onclick = startDictation;
-  $("generateImage").onclick = generateImage;
-  $("imageMode").onclick = () => $("imagePanel").classList.toggle("open");
-  $("voiceToggle").onclick = () => {
-    speakingEnabled = !speakingEnabled;
-    $("voiceToggle").textContent = "🔊 Lire les réponses : " + (speakingEnabled ? "oui" : "non");
-    $("voiceToggle").setAttribute("aria-pressed", String(speakingEnabled));
-    if (!speakingEnabled && "speechSynthesis" in window) speechSynthesis.cancel();
-  };
-  $("newChat").onclick = () => {
-    history = []; saveHistory(); messagesEl.innerHTML = ""; $("welcome").classList.remove("hidden");
-    if ("speechSynthesis" in window) speechSynthesis.cancel();
-  };
-  document.querySelectorAll("[data-prompt]").forEach(btn => btn.onclick = () => { input.value = btn.dataset.prompt; input.focus(); });
-  // Restore the last conversation locally on this device.
-  if (history.length) {
-    $("welcome").classList.add("hidden");
-    history.forEach(m => addMessage(m.role, m.content));
+  async function send(textOverride){
+    if(busy) return;
+    var text=(textOverride!==undefined?textOverride:input.value).trim();
+    if(!text && !attachments.length) return;
+    busy=true;
+    var files=attachments.slice(); attachments=[]; renderPreviews();
+    input.value=""; autosize(); menu.style.display="none";
+
+    var imgs=files.filter(function(a){return a.type.indexOf("image/")===0;}).map(function(a){return a.data;});
+    var shown=esc(text||"")+(files.filter(function(a){return a.type.indexOf("image/")!==0;}).map(function(a){return "\n📄 "+esc(a.name);}).join(""));
+    addMsg("user",shown,null,imgs);
+
+    var wait=typing();
+    try{
+      if(imageMode){
+        var r=await fetch(API+"/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text,images:imgs})});
+        var d=await r.json();
+        var src=d.image||d.url||(d.images&&d.images[0])||"";
+        if(src && src.indexOf("http")!==0 && src.indexOf("data:")!==0) src="data:image/png;base64,"+src;
+        wait.parentNode.remove();
+        if(src) addMsg("ai","Voici votre image :",null,[src]);
+        else addMsg("ai","⚠️ "+esc(d.error||"Impossible de créer l'image."));
+        imageMode=false; input.placeholder="Écrire à Feride AI…"; setStatus("");
+      }else{
+        var content=text;
+        files.forEach(function(a){ if(a.text) content+="\n\n[Fichier : "+a.name+"]\n"+a.text; });
+        history.push({role:"user",content:content});
+        var res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({messages:history,message:content,images:imgs,
+            files:files.filter(function(a){return !a.text && a.type.indexOf("image/")!==0;})})});
+        var data=await res.json();
+        var reply=extract(data);
+        wait.parentNode.remove();
+        if(!reply){ addMsg("ai","⚠️ "+esc(data.error||"Réponse vide du serveur.")); history.pop(); }
+        else{
+          history.push({role:"assistant",content:reply});
+          addMsg("ai",fmt(reply),reply);
+          if(voiceOn) speak(reply,true);
+        }
+      }
+    }catch(err){
+      if(wait.parentNode) wait.parentNode.remove();
+      addMsg("ai","⚠️ Erreur de connexion au serveur ("+esc(String(err&&err.message||err))+"). Vérifiez que le Worker est déployé et que les routes /api/chat et /api/image existent.");
+      if(!imageMode) history.pop();
+    }
+    busy=false;
+    if(voiceOn && !speaking) listenVoice();
   }
-  checkServer();
-  setInterval(checkServer, 60000);
+  $("send").onclick=function(){send();};
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Enter" && !e.shiftKey && window.innerWidth>700){e.preventDefault();send();}
+  });
+
+  $("newChat").onclick=function(){
+    history=[]; attachments=[]; renderPreviews(); stopVoice(); speechSynthesis.cancel();
+    chat.innerHTML='<div id="welcome"><div class="bot">🧠</div><h2>Bonjour ! Je suis FERIDE AI.</h2><p>Comment puis-je vous aider aujourd\'hui ?</p></div>';
+    welcome=$("welcome");
+  };
+
+  /* ---------- Voix : lecture ---------- */
+  var speaking=false;
+  function speak(t,fromVoice){
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    var clean=t.replace(/```[\s\S]*?```/g," bloc de code. ").replace(/[*`#_]/g,"");
+    var u=new SpeechSynthesisUtterance(clean); u.lang="fr-FR";
+    u.onstart=function(){speaking=true;};
+    u.onend=u.onerror=function(){speaking=false; if(voiceOn && !busy) listenVoice();};
+    speechSynthesis.speak(u);
+  }
+
+  /* ---------- Voix : dictée ---------- */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=null, dictating=false, voiceOn=false;
+
+  function makeRec(){
+    if(!SR){setStatus("Reconnaissance vocale non supportée par ce navigateur");return null;}
+    var r=new SR(); r.lang="fr-FR"; r.interimResults=true; r.continuous=false; return r;
+  }
+
+  $("mic").onclick=function(){
+    if(dictating){ if(rec) rec.stop(); return; }
+    rec=makeRec(); if(!rec) return;
+    var base=input.value;
+    rec.onresult=function(e){
+      var t=""; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
+      input.value=(base?base+" ":"")+t; autosize();
+    };
+    rec.onend=function(){dictating=false;$("mic").classList.remove("on");setStatus("");};
+    rec.onerror=function(){dictating=false;$("mic").classList.remove("on");setStatus("Micro indisponible (autorisez-le)");};
+    dictating=true; $("mic").classList.add("on"); setStatus("🎤 Je vous écoute…"); rec.start();
+  };
+
+  /* ---------- Conversation vocale continue ---------- */
+  function listenVoice(){
+    if(!voiceOn || busy) return;
+    rec=makeRec(); if(!rec){voiceOn=false;$("voice").classList.remove("on");return;}
+    var finalText="";
+    rec.onresult=function(e){
+      var t=""; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
+      finalText=t; setStatus("🎧 "+t);
+    };
+    rec.onend=function(){
+      if(!voiceOn) return;
+      if(finalText.trim()){ setStatus("Feride réfléchit…"); send(finalText); }
+      else if(!busy && !speaking){ setTimeout(listenVoice,300); }
+    };
+    rec.onerror=function(e){
+      if(e.error==="not-allowed"||e.error==="service-not-allowed"){stopVoice();setStatus("Micro refusé : autorisez-le dans le navigateur");}
+    };
+    try{rec.start();setStatus("🎧 Parlez, je vous écoute…");}catch(x){}
+  }
+  function stopVoice(){
+    voiceOn=false; $("voice").classList.remove("on");
+    try{if(rec)rec.abort();}catch(x){}
+    speechSynthesis.cancel(); setStatus("");
+  }
+  $("voice").onclick=function(){
+    if(voiceOn){stopVoice();return;}
+    voiceOn=true; $("voice").classList.add("on"); listenVoice();
+  };
 })();
 </script>
 </body>
 </html>
-
