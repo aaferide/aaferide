@@ -3,36 +3,25 @@ const MODEL_CHAT = "@cf/google/gemma-4-26b-a4b-it";
 const MODEL_IMAGE = "@cf/black-forest-labs/flux-2-klein-4b";
 
 const SYSTEM_PROMPT = `
-Tu es FERIDE AI, un assistant intelligent, universel et polyvalent.
+Tu es FERIDE AI, un assistant intelligent, professionnel et polyvalent.
 
-IDENTITÉ :
-Tu t'appelles FERIDE AI.
-Tu es un assistant personnel intelligent, serviable et professionnel.
+Tu réponds en français ou dans la langue utilisée par l'utilisateur.
 
-TES CAPACITÉS :
-- Conversation naturelle en français et autres langues.
-- Informatique, programmation et développement logiciel.
-- Windows, Linux, Android et réseaux.
-- Intelligence artificielle et nouvelles technologies.
-- Sciences, mathématiques et connaissances générales.
-- Analyse des photos, captures d'écran et documents visuels.
-- Aide aux études, au travail et aux projets.
-- Explications simples ou approfondies selon la demande.
-- Génération et modification d'images via ton service d'images.
+Tes missions :
+- Répondre clairement aux questions.
+- Expliquer simplement ou en détail selon la demande.
+- Aider en informatique, programmation et réseaux.
+- Aider en Linux, Windows, Debian, Ubuntu et cybersécurité éthique.
+- Expliquer les bases de données, le cloud et l'intelligence artificielle.
+- Aider en électronique, télécommunications et maintenance.
+- Analyser les images envoyées.
+- Aider à apprendre étape par étape.
+- Être honnête sur tes capacités et tes limites.
 
-COMPORTEMENT :
-- Comprends le contexte des conversations.
-- Utilise l'historique fourni pour garder le fil.
-- Donne des réponses utiles, précises et structurées.
-- Ne prétends jamais avoir effectué une action non réalisée.
-- Signale honnêtement tes limites.
-- Ne répète pas inutilement les mêmes réponses.
-- Accompagne les débutants étape par étape.
-
-Tu es FERIDE AI. Réponds naturellement et avec intelligence.
+Ne prétends jamais avoir effectué une action que tu n'as pas réellement effectuée.
 `;
 
-const CORS_HEADERS = {
+const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -42,320 +31,240 @@ function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      ...CORS_HEADERS,
+      ...corsHeaders,
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
     },
   });
 }
 
-function getImageData(dataUrl) {
-  if (typeof dataUrl !== "string") {
-    throw new Error("Aucune image reçue.");
+function getImageData(value) {
+  if (typeof value !== "string") {
+    throw new Error("Image manquante.");
   }
 
-  const match = dataUrl.match(
-    /^data:(image\/(?:png|jpeg|jpg|webp));base64,([A-Za-z0-9+/]+={0,2})$/
+  const match = value.match(
+    /^data:image\/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/=\s]+)$/
   );
 
   if (!match) {
-    throw new Error("Format d'image invalide. Utilise PNG, JPG ou WEBP.");
+    throw new Error("Format d'image non valide.");
   }
 
-  if (dataUrl.length > 8_000_000) {
-    throw new Error("Image trop volumineuse. Réduis sa taille.");
-  }
-
-  const mime = match[1] === "image/jpg"
-    ? "image/jpeg"
-    : match[1];
-
-  const binary = atob(match[2]);
+  const binary = atob(match[2].replace(/\s/g, ""));
   const bytes = new Uint8Array(binary.length);
 
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
   }
 
-  return { bytes, mime };
+  return {
+    bytes,
+    type: match[1] === "jpg" ? "jpeg" : match[1],
+  };
 }
 
-function extractText(result) {
-  if (typeof result === "string") return result;
+async function handleChat(request, env) {
+  const body = await request.json();
 
-  const value =
-    result?.response ??
-    result?.result?.response ??
-    result?.choices?.[0]?.message?.content ??
-    result?.output_text;
+  const messages = Array.isArray(body.messages)
+    ? body.messages
+    : Array.isArray(body.history)
+      ? body.history
+      : [];
 
-  if (typeof value === "string") return value;
+  const conversation = messages
+    .filter(m =>
+      m &&
+      ["user", "assistant"].includes(m.role) &&
+      typeof m.content === "string"
+    )
+    .slice(-12)
+    .map(m => ({
+      role: m.role,
+      content: m.content.slice(0, 12000),
+    }));
 
-  if (Array.isArray(value)) {
-    return value
-      .map(item => item.text || "")
-      .join("\n");
+  const message = typeof body.message === "string"
+    ? body.message.trim()
+    : "";
+
+  if (!message && !body.image) {
+    return json({ success: false, error: "Écris un message." }, 400);
   }
 
-  return "FERIDE AI n'a pas reçu de réponse exploitable.";
+  const lastMessage = conversation[conversation.length - 1];
+
+  if (message && (!lastMessage || lastMessage.role !== "user" ||
+      lastMessage.content !== message)) {
+    conversation.push({ role: "user", content: message });
+  }
+
+  const userMessage = conversation[conversation.length - 1];
+
+  if (body.image) {
+    const image = getImageData(body.image);
+
+    userMessage.content = [
+      { type: "text", text: message || "Décris cette image." },
+      {
+        type: "image",
+        image: Array.from(image.bytes),
+      },
+    ];
+  }
+
+  const result = await env.AI.run(MODEL_CHAT, {
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...conversation,
+    ],
+    chat_template_kwargs: {
+      enable_thinking: false,
+    },
+  });
+
+  const reply =
+    result?.response ||
+    result?.text ||
+    result?.choices?.[0]?.message?.content ||
+    "";
+
+  if (!reply) {
+    return json({
+      success: false,
+      error: "Le modèle n'a pas renvoyé de réponse.",
+      details: result,
+    }, 502);
+  }
+
+  return json({
+    success: true,
+    reply,
+  });
 }
 
-function extractGeneratedImage(result) {
-  const image =
-    result?.image ??
-    result?.result?.image ??
-    result?.images?.[0];
+async function handleImage(request, env) {
+  const body = await request.json();
 
-  if (typeof image === "string") return image;
+  const prompt = String(body.prompt || body.message || "").trim();
 
-  if (image instanceof Uint8Array) {
-    let binary = "";
-    const chunkSize = 8192;
-
-    for (let i = 0; i < image.length; i += chunkSize) {
-      binary += String.fromCharCode(
-        ...image.subarray(i, i + chunkSize)
-      );
-    }
-
-    return btoa(binary);
+  if (!prompt) {
+    return json({
+      success: false,
+      error: "Décris l'image que tu souhaites créer ou modifier.",
+    }, 400);
   }
 
-  if (image instanceof ArrayBuffer) {
-    return extractGeneratedImage({
-      image: new Uint8Array(image),
-    });
+  if (prompt.length > 4000) {
+    return json({
+      success: false,
+      error: "La description est trop longue.",
+    }, 400);
   }
 
-  return null;
+  const form = new FormData();
+
+  form.set("prompt", prompt);
+  form.set("width", "1024");
+  form.set("height", "768");
+
+  if (body.image) {
+    const image = getImageData(body.image);
+
+    form.set(
+      "input_image_0",
+      new Blob(
+        [image.bytes],
+        { type: "image/" + image.type }
+      ),
+      "reference." + image.type
+    );
+  }
+
+  const formResponse = new Response(form);
+
+  const result = await env.AI.run(MODEL_IMAGE, {
+    multipart: {
+      body: formResponse.body,
+      contentType: formResponse.headers.get("content-type"),
+    },
+  });
+
+  let base64 = result?.image;
+
+  if (!base64 && result instanceof Response) {
+    const data = await result.json();
+    base64 = data.image;
+  }
+
+  if (!base64) {
+    return json({
+      success: false,
+      error: "Le modèle n'a pas généré d'image.",
+    }, 502);
+  }
+
+  return json({
+    success: true,
+    image: "data:image/png;base64," + base64,
+  });
 }
 
 export default {
   async fetch(request, env) {
-
-    // OPTIONS : autorisation des requêtes du navigateur
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: CORS_HEADERS,
-      });
-    }
-
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // TEST DU SERVEUR
-    if (request.method === "GET" && path === "/") {
-      return json({
-        success: true,
-        name: "FERIDE AI",
-        status: "online",
-        version: "2.0",
-        models: {
-          chat: MODEL_CHAT,
-          image: MODEL_IMAGE,
-        },
-        routes: [
-          "/chat",
-          "/edit-image",
-        ],
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
       });
     }
 
-    if (request.method !== "POST") {
+    if (request.method === "GET" && path === "/") {
       return json({
-        success: false,
-        error: "Méthode non autorisée.",
-      }, 405);
+        success: true,
+        assistant: "FERIDE AI",
+        status: "online",
+        message: "Le serveur FERIDE AI fonctionne.",
+      });
     }
 
-    if (!env.AI) {
-      return json({
-        success: false,
-        error: "Workers AI n'est pas configuré. Vérifie le binding AI.",
-      }, 500);
-    }
-
-    let body;
-
-    try {
-      body = await request.json();
-    } catch {
-      return json({
-        success: false,
-        error: "Requête JSON invalide.",
-      }, 400);
-    }
-
-    try {
-
-      // =====================================
-      // 1. CHAT ET ANALYSE DES IMAGES
-      // =====================================
-
-      if (path === "/chat") {
-
-        const message = typeof body.message === "string"
-          ? body.message.trim()
-          : "";
-
-        const history = Array.isArray(body.history)
-          ? body.history.slice(-12)
-          : [];
-
-        if (!message && !body.image) {
-          return json({
-            success: false,
-            error: "Écris un message ou envoie une photo.",
-          }, 400);
+    if (request.method === "POST" && path === "/chat") {
+      try {
+        if (!env.AI) {
+          throw new Error("Binding Workers AI manquant.");
         }
 
-        const messages = [
-          {
-            role: "system",
-            content: SYSTEM_PROMPT,
-          },
-        ];
-
-        for (const item of history) {
-          if (
-            item &&
-            ["user", "assistant"].includes(item.role) &&
-            typeof item.content === "string"
-          ) {
-            messages.push({
-              role: item.role,
-              content: item.content.slice(0, 12000),
-            });
-          }
-        }
-
-        let content = message;
-
-        if (body.image) {
-          getImageData(body.image);
-
-          content = [
-            {
-              type: "text",
-              text: message ||
-                "Analyse cette image en détail et explique ce que tu observes.",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: body.image,
-              },
-            },
-          ];
-        }
-
-        messages.push({
-          role: "user",
-          content,
-        });
-
-        const result = await env.AI.run(MODEL_CHAT, {
-          messages,
-          max_tokens: 2000,
-          temperature: 0.6,
-        });
-
-        const reply = extractText(result);
-
+        return await handleChat(request, env);
+      } catch (error) {
         return json({
-          success: true,
-          reply,
-        });
+          success: false,
+          error: error.message || "Erreur du serveur.",
+        }, 500);
       }
-
-      // =====================================
-      // 2. GÉNÉRATION ET MODIFICATION D'IMAGES
-      // =====================================
-
-      if (path === "/edit-image") {
-
-        const prompt = typeof body.prompt === "string"
-          ? body.prompt.trim()
-          : "";
-
-        if (!prompt) {
-          return json({
-            success: false,
-            error: "Décris l'image que tu souhaites créer.",
-          }, 400);
-        }
-
-        if (prompt.length > 4000) {
-          return json({
-            success: false,
-            error: "La description est trop longue.",
-          }, 400);
-        }
-
-        const form = new FormData();
-
-        form.set("prompt", prompt);
-        form.set("width", "1024");
-        form.set("height", "768");
-
-        // Image de référence facultative
-        if (body.image) {
-          const image = getImageData(body.image);
-
-          form.set(
-            "input_image_0",
-            new Blob([image.bytes], {
-              type: image.mime,
-            }),
-            "reference-image"
-          );
-        }
-
-        const formResponse = new Response(form);
-
-        const result = await env.AI.run(MODEL_IMAGE, {
-          multipart: {
-            body: formResponse.body,
-            contentType: formResponse.headers.get("content-type"),
-          },
-        });
-
-        const generatedImage = extractGeneratedImage(result);
-
-        if (!generatedImage) {
-          return json({
-            success: false,
-            error: "Le modèle n'a pas retourné d'image exploitable.",
-          }, 502);
-        }
-
-        const imageUrl = generatedImage.startsWith("data:image/")
-          ? generatedImage
-          : "data:image/png;base64," + generatedImage;
-
-        return json({
-          success: true,
-          image: imageUrl,
-        });
-      }
-
-      // =====================================
-      // ROUTE INCONNUE
-      // =====================================
-
-      return json({
-        success: false,
-        error: "Route inconnue : " + path,
-      }, 404);
-
-    } catch (error) {
-
-      return json({
-        success: false,
-        error: error?.message || "Erreur interne du serveur.",
-      }, 500);
-
     }
+
+    if (request.method === "POST" && path === "/edit-image") {
+      try {
+        if (!env.AI) {
+          throw new Error("Binding Workers AI manquant.");
+        }
+
+        return await handleImage(request, env);
+      } catch (error) {
+        return json({
+          success: false,
+          error: error.message || "Erreur de génération d'image.",
+        }, 500);
+      }
+    }
+
+    return json({
+      success: false,
+      error: "Route introuvable.",
+    }, 404);
   },
 };
+
