@@ -3,323 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Feride AI</title>
+<title>FERIDE AI</title>
 <style>
-:root{
-  --bg:#0f0f10; --panel:#1a1a1c; --panel2:#242427; --line:#2e2e32;
-  --text:#ececec; --muted:#9a9aa2; --accent:#7c5cff; --accent2:#5b8cff; --danger:#ff5c6c;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
-header{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:var(--bg)}
-.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#fff}
-header h1{font-size:17px;margin:0;flex:1}
-header small{display:block;font-weight:400;color:var(--muted);font-size:11px}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#777;margin-right:5px}
-.dot.ok{background:#3ddc84}.dot.ko{background:var(--danger)}
-.hbtn{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer}
-#chat{flex:1;overflow-y:auto;padding:16px 14px;scroll-behavior:smooth}
-#welcome{text-align:center;margin-top:12vh}
-#welcome .bot{font-size:64px}
-#welcome h2{margin:10px 0 4px;font-size:22px}
-#welcome p{color:var(--muted);margin:0}
-.msg{display:flex;margin:10px 0}
-.msg.user{justify-content:flex-end}
-.bubble{max-width:86%;padding:10px 13px;border-radius:16px;line-height:1.45;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
-.user .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
-.ai .bubble{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:4px}
-.bubble img{max-width:100%;border-radius:10px;display:block;margin-top:6px}
-.bubble pre{background:#0a0a0b;border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;margin:8px 0;white-space:pre}
-.bubble code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
-.tools{display:flex;gap:6px;margin-top:6px}
-.tools button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;font-size:12px;padding:3px 8px;cursor:pointer}
-.typing span{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
-.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
-@keyframes b{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
-#bar{padding:8px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);position:relative}
-#previews{display:flex;gap:8px;flex-wrap:wrap;padding:0 2px 8px}
-.pv{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;font-size:12px;color:var(--muted)}
-.pv img{width:56px;height:56px;object-fit:cover;border-radius:8px;display:block}
-.pv b{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:12px;cursor:pointer}
-.row{display:flex;align-items:flex-end;gap:8px}
-.round{width:42px;height:42px;flex:none;border-radius:50%;border:none;background:var(--panel2);color:var(--text);font-size:20px;cursor:pointer;display:grid;place-items:center}
-.field{flex:1;display:flex;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:4px 6px 4px 14px}
-.field textarea{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:16px;resize:none;max-height:140px;padding:9px 0;font-family:inherit}
-.field button{background:none;border:none;color:var(--muted);font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer}
-.field button.on{color:var(--danger);animation:pulse 1s infinite}
-#send{background:var(--accent);color:#fff}
-#voice{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
-#voice.on{background:var(--danger);animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-#menu{display:none;position:absolute;left:12px;bottom:calc(66px + env(safe-area-inset-bottom,0px));background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:210px;z-index:5;box-shadow:0 8px 30px #0008}
-#menu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text);padding:13px 16px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--line)}
-#menu button:last-child{border:none}
-#status{font-size:12px;color:var(--muted);text-align:center;padding-bottom:4px;min-height:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#0b0f19;color:#e5e7eb;font-family:Arial,Helvetica,sans-serif;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1f2937}
+.logo{display:flex;align-items:center;gap:10px;font-weight:bold}
+.logo span.f{width:32px;height:32px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;color:#fff}
+#newChat{background:#1f2937;color:#e5e7eb;border:0;border-radius:18px;padding:8px 14px;font-size:14px}
+#chat{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:12px}
+#welcome{margin:auto;text-align:center}
+#welcome .brain{font-size:72px}
+#welcome h2{margin-top:10px;font-size:20px}
+#welcome p{color:#94a3b8;margin-top:6px;font-size:14px}
+.msg{max-width:88%;padding:10px 14px;border-radius:16px;line-height:1.45;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+.user{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:#1f2937;border-bottom-left-radius:4px}
+.msg img{max-width:100%;border-radius:10px;display:block;margin-bottom:6px}
+#preview{display:none;padding:6px 14px;gap:8px;align-items:center;font-size:13px;color:#94a3b8}
+#preview img{height:44px;border-radius:8px}
+#preview button{background:none;border:0;color:#f87171;font-size:18px}
+#bar{display:flex;align-items:center;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #1f2937;background:#0b0f19}
+.round{width:42px;height:42px;border-radius:50%;border:0;background:#1f2937;color:#e5e7eb;font-size:22px;flex:none}
+#box{flex:1;display:flex;align-items:center;background:#1f2937;border-radius:22px;padding:0 6px 0 14px}
+#input{flex:1;background:none;border:0;outline:0;color:#e5e7eb;font-size:16px;padding:11px 0}
+#mic,#send{background:none;border:0;color:#e5e7eb;font-size:20px;width:38px;height:38px}
+#send{color:#60a5fa}
+#voice{background:#2563eb;color:#fff}
+#voice.on{background:#dc2626;animation:p 1.2s infinite}
+#mic.on{color:#f87171}
+@keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.6)}50%{box-shadow:0 0 0 10px rgba(220,38,38,0)}}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">F</div>
-  <h1>FERIDE AI<small><span id="dot" class="dot"></span><span id="state">Connexion…</span></small></h1>
-  <button class="hbtn" id="newChat">+ Nouvelle conversation</button>
+  <div class="logo"><span class="f">F</span>FERIDE AI</div>
+  <button id="newChat">Nouvelle conversation</button>
 </header>
 
 <div id="chat">
   <div id="welcome">
-    <div class="bot">🧠</div>
+    <div class="brain">🧠</div>
     <h2>Bonjour ! Je suis FERIDE AI.</h2>
     <p>Comment puis-je vous aider aujourd'hui ?</p>
   </div>
 </div>
 
-<div id="bar">
-  <div id="menu">
-    <button id="mPhoto">🖼️ Photo (galerie)</button>
-    <button id="mCam">📷 Prendre une photo</button>
-    <button id="mFile">📎 Fichier</button>
-    <button id="mImg">🎨 Créer une image</button>
-  </div>
-  <div id="status"></div>
-  <div id="previews"></div>
-  <div class="row">
-    <button class="round" id="plus" title="Ajouter">＋</button>
-    <div class="field">
-      <textarea id="input" rows="1" placeholder="Écrire à Feride AI…"></textarea>
-      <button id="mic" title="Dictée">🎤</button>
-      <button id="send" title="Envoyer">➤</button>
-    </div>
-    <button class="round" id="voice" title="Conversation vocale">🎧</button>
-  </div>
-</div>
+<div id="preview"><img id="prevImg" alt=""><span>Photo prête</span><button id="rmImg">✕</button></div>
 
-<input type="file" id="fPhoto" accept="image/*" multiple hidden>
-<input type="file" id="fCam" accept="image/*" capture="environment" hidden>
-<input type="file" id="fFile" hidden multiple>
+<div id="bar">
+  <button class="round" id="plus">+</button>
+  <div id="box">
+    <input id="input" placeholder="Message à FERIDE AI" autocomplete="off">
+    <button id="mic" title="Dictée">🎤</button>
+    <button id="send" title="Envoyer">➤</button>
+  </div>
+  <button class="round" id="voice" title="Conversation vocale">🎧</button>
+</div>
+<input type="file" id="file" accept="image/*" hidden>
 
 <script>
-(function(){
-  "use strict";
-  var WORKER = "https://aaferide.aaferide-abdou-bb.workers.dev";
-  var API = location.hostname.indexOf("workers.dev")>-1 ? "" : WORKER; // GitHub Pages ou fichier local -> on appelle le Worker
-  var $ = function(id){return document.getElementById(id);};
-  var chat=$("chat"), input=$("input"), welcome=$("welcome");
-  var history=[], attachments=[], imageMode=false, busy=false;
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const fileInput = document.getElementById("file");
+const preview = document.getElementById("preview");
+const prevImg = document.getElementById("prevImg");
+let history = [];
+let pendingImage = null;
+let busy = false;
+let voiceMode = false;
 
-  /* ---------- Santé du serveur ---------- */
-  fetch(API+"/api/health").then(function(r){return r.json();}).then(function(){
-    $("dot").className="dot ok"; $("state").textContent="En ligne";
-  }).catch(function(){
-    $("dot").className="dot ko"; $("state").textContent="Serveur injoignable";
-  });
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  /* ---------- Utilitaires ---------- */
-  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-  function fmt(t){
-    var parts=t.split("```"), out="";
-    for(var i=0;i<parts.length;i++){
-      if(i%2){ out+="<pre><code>"+esc(parts[i].replace(/^[a-zA-Z0-9]*\n/,""))+"</code></pre>"; }
-      else{ out+=esc(parts[i]).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>"); }
-    }
-    return out;
-  }
-  function scrollDown(){chat.scrollTop=chat.scrollHeight;}
-  function setStatus(t){$("status").textContent=t||"";}
-  function autosize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,140)+"px";}
-  input.addEventListener("input",autosize);
+function addMsg(text, who, imgSrc) {
+  const w = document.getElementById("welcome");
+  if (w) w.remove();
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  if (imgSrc) { const i = document.createElement("img"); i.src = imgSrc; d.appendChild(i); }
+  d.appendChild(document.createTextNode(text));
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
 
-  function addMsg(role,html,rawText,imgs){
-    if(welcome){welcome.remove();welcome=null;}
-    var wrap=document.createElement("div"); wrap.className="msg "+role;
-    var b=document.createElement("div"); b.className="bubble"; b.innerHTML=html;
-    if(imgs){imgs.forEach(function(src){var im=document.createElement("img");im.src=src;b.appendChild(im);});}
-    if(role==="ai" && rawText){
-      var tools=document.createElement("div"); tools.className="tools";
-      var sp=document.createElement("button"); sp.textContent="🔊 Écouter";
-      sp.onclick=function(){speak(rawText);};
-      var cp=document.createElement("button"); cp.textContent="📋 Copier";
-      cp.onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(rawText);cp.textContent="✔ Copié";};
-      tools.appendChild(sp);tools.appendChild(cp);b.appendChild(tools);
-    }
-    wrap.appendChild(b); chat.appendChild(wrap); scrollDown(); return b;
-  }
-  function typing(){
-    return addMsg("ai",'<span class="typing"><span></span><span></span><span></span></span>');
-  }
+function speak(text, onEnd) {
+  if (!("speechSynthesis" in window)) { if (onEnd) onEnd(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "fr-FR";
+  u.onend = () => onEnd && onEnd();
+  u.onerror = () => onEnd && onEnd();
+  speechSynthesis.speak(u);
+}
 
-  /* ---------- Pièces jointes ---------- */
-  function renderPreviews(){
-    var box=$("previews"); box.innerHTML="";
-    attachments.forEach(function(a,i){
-      var d=document.createElement("div"); d.className="pv";
-      if(a.type.indexOf("image/")===0){var im=document.createElement("img");im.src=a.data;d.appendChild(im);}
-      else{d.textContent="📄 "+a.name;}
-      var x=document.createElement("b"); x.textContent="×";
-      x.onclick=function(){attachments.splice(i,1);renderPreviews();};
-      d.appendChild(x); box.appendChild(d);
+async function sendMessage(text) {
+  text = (text || "").trim();
+  if ((!text && !pendingImage) || busy) return;
+  busy = true;
+  const imgForShow = pendingImage ? pendingImage.url : null;
+  const images = pendingImage ? [{ mime: pendingImage.mime, data: pendingImage.data }] : [];
+  addMsg(text || "(photo)", "user", imgForShow);
+  history.push({ role: "user", content: text || "Décris cette image." });
+  input.value = "";
+  clearImage();
+  const wait = addMsg("…", "bot");
+  try {
+    const r = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history, images })
     });
+    const data = await r.json();
+    const reply = data.reply || ("Erreur : " + (data.error || "réponse vide"));
+    wait.textContent = reply;
+    history.push({ role: "assistant", content: reply });
+    busy = false;
+    if (voiceMode) speak(reply, listenLoop);
+  } catch (e) {
+    wait.textContent = "Erreur réseau : " + e.message;
+    busy = false;
+    if (voiceMode) listenLoop();
   }
-  function readFiles(files){
-    Array.prototype.forEach.call(files,function(f){
-      var r=new FileReader();
-      if(f.type.indexOf("image/")===0 || f.type==="application/pdf"){
-        r.onload=function(){attachments.push({name:f.name,type:f.type,data:r.result});renderPreviews();};
-        r.readAsDataURL(f);
-      }else{
-        r.onload=function(){attachments.push({name:f.name,type:"text/plain",text:String(r.result).slice(0,60000)});renderPreviews();};
-        r.readAsText(f);
-      }
-    });
-  }
-  $("fPhoto").onchange=function(e){readFiles(e.target.files);e.target.value="";};
-  $("fCam").onchange=function(e){readFiles(e.target.files);e.target.value="";};
-  $("fFile").onchange=function(e){readFiles(e.target.files);e.target.value="";};
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  /* ---------- Menu + ---------- */
-  var menu=$("menu");
-  $("plus").onclick=function(e){e.stopPropagation();menu.style.display=menu.style.display==="block"?"none":"block";};
-  document.addEventListener("click",function(){menu.style.display="none";});
-  $("mPhoto").onclick=function(){$("fPhoto").click();};
-  $("mCam").onclick=function(){$("fCam").click();};
-  $("mFile").onclick=function(){$("fFile").click();};
-  $("mImg").onclick=function(){
-    imageMode=!imageMode;
-    input.placeholder=imageMode?"Décrivez l'image à créer…":"Écrire à Feride AI…";
-    setStatus(imageMode?"🎨 Mode création d'image activé":"");
-    input.focus();
+/* Photos */
+document.getElementById("plus").onclick = () => fileInput.click();
+fileInput.onchange = () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const url = reader.result;
+    pendingImage = { url, mime: f.type || "image/jpeg", data: url.split(",")[1] };
+    prevImg.src = url;
+    preview.style.display = "flex";
   };
+  reader.readAsDataURL(f);
+  fileInput.value = "";
+};
+function clearImage() { pendingImage = null; preview.style.display = "none"; }
+document.getElementById("rmImg").onclick = clearImage;
 
-  /* ---------- Envoi ---------- */
-  function extract(d){
-    if(!d) return "";
-    if(typeof d==="string") return d;
-    return d.reply||d.response||d.text||d.message||d.answer||d.output||
-      (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||"";
-  }
+/* Envoi */
+document.getElementById("send").onclick = () => sendMessage(input.value);
+input.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(input.value); });
 
-  async function send(textOverride){
-    if(busy) return;
-    var text=(textOverride!==undefined?textOverride:input.value).trim();
-    if(!text && !attachments.length) return;
-    busy=true;
-    var files=attachments.slice(); attachments=[]; renderPreviews();
-    input.value=""; autosize(); menu.style.display="none";
-
-    var imgs=files.filter(function(a){return a.type.indexOf("image/")===0;}).map(function(a){return a.data;});
-    var shown=esc(text||"")+(files.filter(function(a){return a.type.indexOf("image/")!==0;}).map(function(a){return "\n📄 "+esc(a.name);}).join(""));
-    addMsg("user",shown,null,imgs);
-
-    var wait=typing();
-    try{
-      if(imageMode){
-        var r=await fetch(API+"/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text,images:imgs})});
-        var d=await r.json();
-        var src=d.image||d.url||(d.images&&d.images[0])||"";
-        if(src && src.indexOf("http")!==0 && src.indexOf("data:")!==0) src="data:image/png;base64,"+src;
-        wait.parentNode.remove();
-        if(src) addMsg("ai","Voici votre image :",null,[src]);
-        else addMsg("ai","⚠️ "+esc(d.error||"Impossible de créer l'image."));
-        imageMode=false; input.placeholder="Écrire à Feride AI…"; setStatus("");
-      }else{
-        var content=text;
-        files.forEach(function(a){ if(a.text) content+="\n\n[Fichier : "+a.name+"]\n"+a.text; });
-        history.push({role:"user",content:content});
-        var res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({messages:history,message:content,images:imgs,
-            files:files.filter(function(a){return !a.text && a.type.indexOf("image/")!==0;})})});
-        var data=await res.json();
-        var reply=extract(data);
-        wait.parentNode.remove();
-        if(!reply){ addMsg("ai","⚠️ "+esc(data.error||"Réponse vide du serveur.")); history.pop(); }
-        else{
-          history.push({role:"assistant",content:reply});
-          addMsg("ai",fmt(reply),reply);
-          if(voiceOn) speak(reply,true);
-        }
-      }
-    }catch(err){
-      if(wait.parentNode) wait.parentNode.remove();
-      addMsg("ai","⚠️ Erreur de connexion au serveur ("+esc(String(err&&err.message||err))+"). Vérifiez que le Worker est déployé et que les routes /api/chat et /api/image existent.");
-      if(!imageMode) history.pop();
-    }
-    busy=false;
-    if(voiceOn && !speaking) listenVoice();
-  }
-  $("send").onclick=function(){send();};
-  input.addEventListener("keydown",function(e){
-    if(e.key==="Enter" && !e.shiftKey && window.innerWidth>700){e.preventDefault();send();}
-  });
-
-  $("newChat").onclick=function(){
-    history=[]; attachments=[]; renderPreviews(); stopVoice(); speechSynthesis.cancel();
-    chat.innerHTML='<div id="welcome"><div class="bot">🧠</div><h2>Bonjour ! Je suis FERIDE AI.</h2><p>Comment puis-je vous aider aujourd\'hui ?</p></div>';
-    welcome=$("welcome");
+/* Dictée (micro) */
+let dictRec = null;
+const micBtn = document.getElementById("mic");
+micBtn.onclick = () => {
+  if (!SR) return alert("La dictée n'est pas supportée par ce navigateur.");
+  if (dictRec) { dictRec.stop(); return; }
+  dictRec = new SR();
+  dictRec.lang = "fr-FR";
+  dictRec.interimResults = true;
+  micBtn.classList.add("on");
+  dictRec.onresult = e => {
+    let t = "";
+    for (const r of e.results) t += r[0].transcript;
+    input.value = t;
   };
+  dictRec.onend = () => { micBtn.classList.remove("on"); dictRec = null; };
+  dictRec.onerror = () => { micBtn.classList.remove("on"); dictRec = null; };
+  dictRec.start();
+};
 
-  /* ---------- Voix : lecture ---------- */
-  var speaking=false;
-  function speak(t,fromVoice){
-    if(!("speechSynthesis" in window)) return;
-    speechSynthesis.cancel();
-    var clean=t.replace(/```[\s\S]*?```/g," bloc de code. ").replace(/[*`#_]/g,"");
-    var u=new SpeechSynthesisUtterance(clean); u.lang="fr-FR";
-    u.onstart=function(){speaking=true;};
-    u.onend=u.onerror=function(){speaking=false; if(voiceOn && !busy) listenVoice();};
-    speechSynthesis.speak(u);
-  }
-
-  /* ---------- Voix : dictée ---------- */
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  var rec=null, dictating=false, voiceOn=false;
-
-  function makeRec(){
-    if(!SR){setStatus("Reconnaissance vocale non supportée par ce navigateur");return null;}
-    var r=new SR(); r.lang="fr-FR"; r.interimResults=true; r.continuous=false; return r;
-  }
-
-  $("mic").onclick=function(){
-    if(dictating){ if(rec) rec.stop(); return; }
-    rec=makeRec(); if(!rec) return;
-    var base=input.value;
-    rec.onresult=function(e){
-      var t=""; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
-      input.value=(base?base+" ":"")+t; autosize();
-    };
-    rec.onend=function(){dictating=false;$("mic").classList.remove("on");setStatus("");};
-    rec.onerror=function(){dictating=false;$("mic").classList.remove("on");setStatus("Micro indisponible (autorisez-le)");};
-    dictating=true; $("mic").classList.add("on"); setStatus("🎤 Je vous écoute…"); rec.start();
+/* Conversation vocale continue */
+const voiceBtn = document.getElementById("voice");
+let voiceRec = null;
+function listenLoop() {
+  if (!voiceMode || busy) return;
+  voiceRec = new SR();
+  voiceRec.lang = "fr-FR";
+  voiceRec.interimResults = false;
+  let got = false;
+  voiceRec.onresult = e => {
+    got = true;
+    sendMessage(e.results[0][0].transcript);
   };
+  voiceRec.onend = () => { if (voiceMode && !got && !busy) listenLoop(); };
+  voiceRec.onerror = () => { if (voiceMode && !busy) setTimeout(listenLoop, 600); };
+  try { voiceRec.start(); } catch (e) {}
+}
+voiceBtn.onclick = () => {
+  if (!SR) return alert("La conversation vocale n'est pas supportée par ce navigateur.");
+  voiceMode = !voiceMode;
+  voiceBtn.classList.toggle("on", voiceMode);
+  if (voiceMode) listenLoop();
+  else { if (voiceRec) voiceRec.abort(); speechSynthesis.cancel(); }
+};
 
-  /* ---------- Conversation vocale continue ---------- */
-  function listenVoice(){
-    if(!voiceOn || busy) return;
-    rec=makeRec(); if(!rec){voiceOn=false;$("voice").classList.remove("on");return;}
-    var finalText="";
-    rec.onresult=function(e){
-      var t=""; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
-      finalText=t; setStatus("🎧 "+t);
-    };
-    rec.onend=function(){
-      if(!voiceOn) return;
-      if(finalText.trim()){ setStatus("Feride réfléchit…"); send(finalText); }
-      else if(!busy && !speaking){ setTimeout(listenVoice,300); }
-    };
-    rec.onerror=function(e){
-      if(e.error==="not-allowed"||e.error==="service-not-allowed"){stopVoice();setStatus("Micro refusé : autorisez-le dans le navigateur");}
-    };
-    try{rec.start();setStatus("🎧 Parlez, je vous écoute…");}catch(x){}
-  }
-  function stopVoice(){
-    voiceOn=false; $("voice").classList.remove("on");
-    try{if(rec)rec.abort();}catch(x){}
-    speechSynthesis.cancel(); setStatus("");
-  }
-  $("voice").onclick=function(){
-    if(voiceOn){stopVoice();return;}
-    voiceOn=true; $("voice").classList.add("on"); listenVoice();
-  };
-})();
+/* Nouvelle conversation */
+document.getElementById("newChat").onclick = () => {
+  history = [];
+  clearImage();
+  speechSynthesis.cancel();
+  chat.innerHTML = '<div id="welcome"><div class="brain">🧠</div><h2>Bonjour ! Je suis FERIDE AI.</h2><p>Comment puis-je vous aider aujourd\'hui ?</p></div>';
+};
 </script>
 </body>
 </html>
